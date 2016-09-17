@@ -11,44 +11,21 @@
 
 <style>
 body { visibility: hidden }
-figure{
-	color: yellow;
-	background: teal;
-	padding: 20px;
-	margin-bottom: 20px;
-}
-div#editohya {
-	background-color: #00aaaa;padding:15px; height: 50px; width:100%;color:white;margin-bottom:15px; 
-}
 .string { color: green; }
 .number { color: darkorange; }
 .boolean { color: blue; }
 .null { color: magenta; }
 .key { color: red; }
 .highlight pre {white-space: pre;}
-
-.bs-example{
-	background: #bbbbbb;
-	color: #000000;
-	padding: 30px;
-}
-
-.jumbotron h1{
-	font-size: 35px;
-	text-transform: none;
-	-webkit-animation:rainbow 1s infinite;
-	-ms-animation:rainbow 1s infinite;
-	-o-animation:rainbow 1s infinite;
-	animation:rainbow 1s infinite;
-}
-.jumbotron { margin-bottom: 40px; }
-figure h2{
-	-webkit-animation:rainbow 1s infinite;
-	-ms-animation:rainbow 1s infinite;
-	-o-animation:rainbow 1s infinite;
-	animation:rainbow 1s infinite;
-}
-
+.bs-example{background: #bbbbbb;	color: #000000;	padding: 30px;}
+.jumbotron h1{	font-size: 35px;	text-transform: none;	-webkit-animation:rainbow 1s infinite;	-ms-animation:rainbow 1s infinite;	-o-animation:rainbow 1s infinite;	animation:rainbow 1s infinite;}
+.jumbotron { margin-bottom: 40px; background: black; }
+.rainbow{	-webkit-animation:rainbow 1s infinite;	-ms-animation:rainbow 1s infinite;	-o-animation:rainbow 1s infinite;	animation:rainbow 1s infinite; }
+.terrylogo {display:block; margin: -96px auto;}
+input.form-control, select.form-control{ background: white; color: black; min-height: 25px; }
+figure{color: yellow;background: teal; padding: 20px;	margin-bottom: 20px;}
+div#editohya {	background-color: white; padding:15px; height: 50px; width:100%;color:black;margin-bottom:15px; }
+hr { border-top: 2px solid #ffffff; }
 @-webkit-keyframes rainbow {
 	0% {color: #ff0000;}
 	10% {color: #ff8000;}
@@ -112,19 +89,22 @@ figure h2{
 <body>
 
 <div class="container">
-	<div class="row">
-		<div class="col-xs-12">
-			<div class="jumbotron"><h1>The TERRY Binder!</h1><small>a simple jQuery data binder. Originally forked from <em>petersirka/jquery.bindings</em></small></div>
-			<div id="container" data-name="obj">
-				<p>Just write some stuff in this super ghetto-oldschool-retro form i got der...</p>
+	<div class="jumbotron"><img src="./assets/terry.gif" class="terrylogo"/><small>a simple jQuery data binder. Originally forked from <em>petersirka/jquery.bindings</em></small>
+	</div>
+	<div id="container" data-name="obj">
+		<p>Just write some stuff in this super ghetto-oldschool-retro form i got her and see it be bound!</p>
+		<hr>
+		<div class="row">
+			<div class="col-sm-6">
+					<h1>The Form:</h1>
 				<div class="bs-example">
 					<div class="form-group">
 						<label>Some Property</label>
 						<input class="form-control" type="text" data-model="property" />
 					</div>
 					<div class="form-group">
-						<label>The same property</label>
-						<input class="form-control" type="text" data-model="property" />
+						<label>The things I like</label>
+						<input class="form-control" type="text" data-model="somearray" />
 					</div>
 					<div class="form-group">
 						<label style="display:block;">Bootstrap Buttons</label>
@@ -143,17 +123,21 @@ figure h2{
 						<div id="editohya" style="" contenteditable="true" data-model="property"></div>
 					</div>
 				</div>	
-				<figure class="highlight">
-					<h2>Check out my sweetness that is bindings!</h2>
-					<div data-model="property"></div>
-					<div data-model="gender"></div>
-					<div data-model="select"></div>
-					<pre id="jsondump"></pre>
-				</figure>
-				<div class="form-group text-center">
-					<a class="btn btn-success btn-lg" href="https://github.com/froggr/terry.binder.js">GITHUB BAM!</a>
-				</div>
 			</div>
+			<div class="col-sm-6">
+				<h2 class="rainbow">Check out my sweetness that is bindings!</h2>
+				<figure class="highlight">
+					<p>This is a <span data-model="property"></span></p>
+					<p>I just wanna eat <span data-model="somearray"></span></p>
+					<p>What's my gender? <span data-model="gender"></span>!</p>
+					<p>You will pay me $<span data-model="select"></span> million dollars!</p>
+				</figure>
+				<h1>The Model JSON:</h1>
+				<pre id="jsondump"></pre>
+			</div>
+		</div>
+		<div class="form-group text-center">
+			<a class="btn btn-success btn-lg" href="https://github.com/froggr/terry.binder.js">GITHUB BAM!</a>
 		</div>
 	</div>
 </div>
@@ -166,14 +150,26 @@ figure h2{
 <script>
 
 var obj = {
-				property : 'test', 
+				property : 'test',
+				somearray: ["chips", "candy", "pop"],
 				gender: 'male', 
 				select: '2'
 			};
 $('#container').bindings('create')(obj, '#container');
 
 $('#container').on('model-update', function(e, model, path) {
-	function syntaxHighlight(json) {
+	var str = JSON.stringify(model, undefined, 4)
+	var cold = syntaxHighlight(str);
+    $('#jsondump').html(cold);
+});
+
+$.bindings.format = function(path, value, format, model, name) {
+			if (value instanceof Array)
+					return value.join(', ');
+			return value;
+};
+
+function syntaxHighlight(json) {
     json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
         var cls = 'number';
@@ -192,14 +188,11 @@ $('#container').on('model-update', function(e, model, path) {
     });
 }
 
-var str = JSON.stringify(model, undefined, 4)
-var cold = syntaxHighlight(str);
-    $('#jsondump').html(cold);
-});
-
+	$('#jsondump').html(syntaxHighlight(JSON.stringify(obj, undefined, 4)));
+    
 
 //var test = $('#container').bindings('model');
-//_386 = { onePass: true, speedFactor: 1.25 };
+_386 = { onePass: true, speedFactor: 1.25 };
 
 </script>
 
