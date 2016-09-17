@@ -152,7 +152,7 @@ function bindings_destroy() {
     self.removeData('model');
     self.removeData('default');
     self.removeData('isChange');
-    self.find('input[data-model],textarea[data-model],select[data-model]').unbind('change');
+    self.find('input[data-model],textarea[data-model],select[data-model],div[data-model]').unbind('change');
     self.trigger('model-destroy', [schema]);
     return self;
 }
@@ -257,11 +257,13 @@ function bindings_rebind_force(schema) {
                 val = val === null ? '' : val.toString();
         }
 
-       if ((tag === 'input' || tag === 'select' || tag === 'textarea') && !(el.is(":focus")))
-			el.val(val);
-		 else
-        el.html(val);
-    });
+		  if(el.is(":focus") == false) {
+       		if ((tag === 'input' || tag === 'select' || tag === 'textarea') && !(el.is(":focus")))
+					el.val(val);
+		 		else
+        			el.html(val);
+    		}
+	 });
 
     return self;
 }
