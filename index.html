@@ -1,0 +1,199 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>The TERRY Binder</title>
+  <meta name="description" content="a jQuery databinder">
+  <meta name="author" content="froggr">
+	<link rel="stylesheet" href="./assets/css/bootstrap.min.css">
+
+<style>
+body { visibility: hidden }
+figure{
+	color: blue;
+	background: teal;
+	padding: 20px;
+}
+div#editohya {
+	background-color: #00aaaa;padding:15px; height: 50px; width:100%;color:white;margin-bottom:15px; 
+}
+.string { color: green; }
+.number { color: darkorange; }
+.boolean { color: blue; }
+.null { color: magenta; }
+.key { color: red; }
+.highlight pre {white-space: pre;}
+
+.jumbotron h1{
+	font-size: 35px;
+	text-transform: none;
+	-webkit-animation:rainbow 1s infinite;
+	-ms-animation:rainbow 1s infinite;
+	-o-animation:rainbow 1s infinite;
+	animation:rainbow 1s infinite;
+}
+figure h2{
+	-webkit-animation:rainbow 1s infinite;
+	-ms-animation:rainbow 1s infinite;
+	-o-animation:rainbow 1s infinite;
+	animation:rainbow 1s infinite;
+}
+
+@-webkit-keyframes rainbow {
+	0% {color: #ff0000;}
+	10% {color: #ff8000;}
+	20% {color: #ffff00;}
+	30% {color: #80ff00;}
+	40% {color: #00ff00;}
+	50% {color: #00ff80;}
+	60% {color: #00ffff;}
+	70% {color: #0080ff;}
+	80% {color: #0000ff;}
+	90% {color: #8000ff;}
+	100% {color: #ff0080;}
+}
+@-ms-keyframes rainbow {
+	0% {color: #ff0000;}
+	10% {color: #ff8000;}
+	20% {color: #ffff00;}
+	30% {color: #80ff00;}
+	40% {color: #00ff00;}
+	50% {color: #00ff80;}
+	60% {color: #00ffff;}
+	70% {color: #0080ff;}
+	80% {color: #0000ff;}
+	90% {color: #8000ff;}
+	100% {color: #ff0080;}
+}
+@-o-keyframes rainbow {
+	0% {color: #ff0000;}
+	10% {color: #ff8000;}
+	20% {color: #ffff00;}
+	30% {color: #80ff00;}
+	40% {color: #00ff00;}
+	50% {color: #00ff80;}
+	60% {color: #00ffff;}
+	70% {color: #0080ff;}
+	80% {color: #0000ff;}
+	90% {color: #8000ff;}
+	100% {color: #ff0080;}
+}
+@keyframes rainbow {
+	0% {color: #ff0000;}
+	10% {color: #ff8000;}
+	20% {color: #ffff00;}
+	30% {color: #80ff00;}
+	40% {color: #00ff00;}
+	50% {color: #00ff80;}
+	60% {color: #00ffff;}
+	70% {color: #0080ff;}
+	80% {color: #0000ff;}
+	90% {color: #8000ff;}
+	100% {color: #ff0080;}
+}
+
+</style>
+
+  <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+
+<div class="container">
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="jumbotron"><h1>The TERRY Binder!</h1><small>a simple jQuery data binder. Originally forked from forked from <em>petersirka/jquery.bindings</em></small></div>
+			<div id="container" data-name="obj">
+				<div class="bs-example">
+					<div class="form-group">
+						<label>Some Property</label>
+						<input class="form-control" type="text" data-model="property" />
+					</div>
+					<div class="form-group">
+						<label>The same property</label>
+						<input class="form-control" type="text" data-model="property" />
+					</div>
+					<div class="form-group">
+						<label style="display:block;">Bootstrap Buttons</label>
+						<div class="btn-group" data-toggle="buttons">
+							<label class="btn btn-default" for="gender">Male<input type="radio" id="gender" name="gender" data-model="gender" value="male"></label>
+							<label class="btn btn-default" for="gender">Female <input type="radio" name="gender" id="gender" data-model="gender" value="female"></label>
+							<label class="btn btn-default" for="gender">Other<input type="radio" name="gender" id="gender" data-model="gender" value="other"></label>
+						</div>
+					</div>
+					<div class="form-group">
+						<label>A select</label>
+						<select data-model="select" class="form-control"> <option>1</option> <option>2</option> <option>3</option> <option>4</option> <option>5</option> </select>
+					</div>
+					<div class="form-group">
+						<label>Property in a content-editable div</label>
+						<div id="editohya" style="" contenteditable="true" data-model="property"></div>
+					</div>
+					
+					<figure class="highlight">
+						<h2>Check out my sweetness that is bindings!</h2>
+						<div data-model="property"></div>
+						<div data-model="gender"></div>
+						<div data-model="select"></div>
+						<pre id="jsondump"></pre>
+					</figure>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script   src="https://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
+<script src="./jquery.bindings.js"></script>
+<script src="./assets/js/bootstrap.min.js"></script>
+
+<script>
+
+var obj = {
+				property : 'test', 
+				gender: 'male', 
+				select: '2'
+			};
+$('#container').bindings('create')(obj, '#container');
+
+$('#container').on('model-update', function(e, model, path) {
+	function syntaxHighlight(json) {
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
+}
+
+var str = JSON.stringify(model, undefined, 4)
+var cold = syntaxHighlight(str);
+    $('#jsondump').html(cold);
+});
+
+
+//var test = $('#container').bindings('model');
+//_386 = { onePass: true, speedFactor: 1.25 };
+
+</script>
+
+
+
+</body>
+
+</html>
