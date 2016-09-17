@@ -1,4 +1,4 @@
-# jQuery two way bindings
+![image](https://cloud.githubusercontent.com/assets/4052787/18605812/7a23705e-7c6b-11e6-8c71-f6f83d84ab5d.png)
 
 Simple jQuery two way bindings. This plugin joins HTML elements with a model and in reverse.
 - [originally forked from petersirka/jquery.bindings](https://github.com/petersirka/jquery.bindings)
