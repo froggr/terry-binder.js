@@ -12,9 +12,10 @@
 <style>
 body { visibility: hidden }
 figure{
-	color: blue;
+	color: yellow;
 	background: teal;
 	padding: 20px;
+	margin-bottom: 20px;
 }
 div#editohya {
 	background-color: #00aaaa;padding:15px; height: 50px; width:100%;color:white;margin-bottom:15px; 
@@ -26,6 +27,12 @@ div#editohya {
 .key { color: red; }
 .highlight pre {white-space: pre;}
 
+.bs-example{
+	background: #bbbbbb;
+	color: #000000;
+	padding: 30px;
+}
+
 .jumbotron h1{
 	font-size: 35px;
 	text-transform: none;
@@ -34,6 +41,7 @@ div#editohya {
 	-o-animation:rainbow 1s infinite;
 	animation:rainbow 1s infinite;
 }
+.jumbotron { margin-bottom: 40px; }
 figure h2{
 	-webkit-animation:rainbow 1s infinite;
 	-ms-animation:rainbow 1s infinite;
@@ -108,6 +116,7 @@ figure h2{
 		<div class="col-xs-12">
 			<div class="jumbotron"><h1>The TERRY Binder!</h1><small>a simple jQuery data binder. Originally forked from forked from <em>petersirka/jquery.bindings</em></small></div>
 			<div id="container" data-name="obj">
+				<p>Just write some stuff in this super ghetto-oldschool-retro form i got der...</p>
 				<div class="bs-example">
 					<div class="form-group">
 						<label>Some Property</label>
@@ -120,9 +129,9 @@ figure h2{
 					<div class="form-group">
 						<label style="display:block;">Bootstrap Buttons</label>
 						<div class="btn-group" data-toggle="buttons">
-							<label class="btn btn-default" for="gender">Male<input type="radio" id="gender" name="gender" data-model="gender" value="male"></label>
-							<label class="btn btn-default" for="gender">Female <input type="radio" name="gender" id="gender" data-model="gender" value="female"></label>
-							<label class="btn btn-default" for="gender">Other<input type="radio" name="gender" id="gender" data-model="gender" value="other"></label>
+							<label class="btn btn-danger" for="gender">Male<input type="radio" id="gender" name="gender" data-model="gender" value="male"></label>
+							<label class="btn btn-danger" for="gender">Female <input type="radio" name="gender" id="gender" data-model="gender" value="female"></label>
+							<label class="btn btn-danger" for="gender">Other<input type="radio" name="gender" id="gender" data-model="gender" value="other"></label>
 						</div>
 					</div>
 					<div class="form-group">
@@ -133,14 +142,16 @@ figure h2{
 						<label>Property in a content-editable div</label>
 						<div id="editohya" style="" contenteditable="true" data-model="property"></div>
 					</div>
-					
-					<figure class="highlight">
-						<h2>Check out my sweetness that is bindings!</h2>
-						<div data-model="property"></div>
-						<div data-model="gender"></div>
-						<div data-model="select"></div>
-						<pre id="jsondump"></pre>
-					</figure>
+				</div>	
+				<figure class="highlight">
+					<h2>Check out my sweetness that is bindings!</h2>
+					<div data-model="property"></div>
+					<div data-model="gender"></div>
+					<div data-model="select"></div>
+					<pre id="jsondump"></pre>
+				</figure>
+				<div class="form-group text-center">
+					<a class="btn btn-success btn-lg" href="https://github.com/froggr/terry.binder.js">GITHUB BAM!</a>
 				</div>
 			</div>
 		</div>
@@ -149,7 +160,7 @@ figure h2{
 
 <script   src="https://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
-<script src="./jquery.bindings.js"></script>
+<script src="./terry.binder.js"></script>
 <script src="./assets/js/bootstrap.min.js"></script>
 
 <script>
