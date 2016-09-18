@@ -258,8 +258,12 @@ function bindings_rebind_force(schema) {
         }
 
 		  if(el.is(":focus") == false) {
-       		if ((tag === 'input' || tag === 'select' || tag === 'textarea') && !(el.is(":focus")))
-					el.val(val);
+       		if ((tag === 'input' || tag === 'select' || tag === 'textarea')){
+					if($(el)[0].hasAttribute('multiple'))
+						console.log(val);				
+					else	
+						el.val(val);
+				}
 		 		else
         			el.html(val);
     		}

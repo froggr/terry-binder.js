@@ -1,7 +1,6 @@
 <!doctype html>
 
 <html lang="en">
-<head>
   <meta charset="utf-8">
 
   <title>The TERRY Binder</title>
@@ -10,7 +9,7 @@
 	<link rel="stylesheet" href="./assets/css/bootstrap.min.css">
 
 <style>
-body { visibility: hidden }
+body { visibility: hidden; background: black; }
 .string { color: green; }
 .number { color: darkorange; }
 .boolean { color: blue; }
@@ -20,16 +19,18 @@ body { visibility: hidden }
 .bs-example{background: #bbbbbb;	color: #000000;	padding: 30px;}
 .jumbotron h1{	font-size: 35px;	text-transform: none;	-webkit-animation:rainbow 1s infinite;	-ms-animation:rainbow 1s infinite;	-o-animation:rainbow 1s infinite;	animation:rainbow 1s infinite;}
 .jumbotron { margin-bottom: 40px; background: black; }
-.rainbow{	-webkit-animation:rainbow 1s infinite;	-ms-animation:rainbow 1s infinite;	-o-animation:rainbow 1s infinite;	animation:rainbow 1s infinite; }
+.rainbow, strong {	-webkit-animation:rainbow 1s infinite;	-ms-animation:rainbow 1s infinite;	-o-animation:rainbow 1s infinite;	animation:rainbow 1s infinite; }
 .terrylogo {display:block; margin: -96px auto;}
+.page-header { background-color: red; font-size: 30px; font-weight: bold; text-align:center; padding:30px;}
 input.form-control, select.form-control{ background: white; color: black; min-height: 25px; }
-figure{color: yellow;background: teal; padding: 20px;	margin-bottom: 20px;}
+figure { color: yellow;background: teal; padding: 20px;	margin-bottom: 20px;}
 div#editohya {	background-color: white; padding:15px; height: 50px; width:100%;color:black;margin-bottom:15px; }
-hr { border-top: 2px solid #ffffff; }
-@media only screen and (min-width : 768px) {
-	.is-table-row {display: table; width: 100%;}
-	.is-table-row [class*="col-"] { float: none;display: table-cell; vertical-align: top;}
-}
+.picofterry{ height: 200px; margin: 0 auto; display: block; }
+.affix { top: 30px; }
+hr, section { border-top: 2px solid #ffffff; }
+section { padding: 20px 0; }
+blockquote { color: #fff; background: green; }
+[selected] {background-color: black; color: grey;}
 @-webkit-keyframes rainbow {
 	0% {color: #ff0000;}
 	10% {color: #ff8000;}
@@ -88,26 +89,32 @@ hr { border-top: 2px solid #ffffff; }
   <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
   <![endif]-->
-</head>
 
-<body>
 
-<div class="container">
-	<div class="jumbotron"><img src="./assets/terry.gif" class="terrylogo"/><small>a simple jQuery data binder. Originally forked from <em>petersirka/jquery.bindings</em></small>
+<div class="container-fluid">
+	<div class="jumbotron"><img src="./assets/img/terry.gif" class="terrylogo"/><small>a simple jQuery data binder. Originally forked from <em>petersirka/jquery.bindings</em></small>
 	</div>
 	<div id="container" data-name="obj">
 		<p>Just write some stuff in this super ghetto-oldschool-retro form i got her and see it be bound!</p>
 		<hr>
-		<div class="row-fluid is-table-row">
-			<div class="col-sm-6 bs-example">
+		<div class="row-fluid">
+			<div class="col-sm-4">
+				<div id="theform" data-spy="affix" data-offset-top="420">
+				<div class="bs-example">
 					<h1>The Form:</h1>
 					<div class="form-group">
 						<label>Some Property</label>
 						<input class="form-control" type="text" data-model="property" />
 					</div>
 					<div class="form-group">
-						<label>The things I like</label>
-						<input class="form-control" type="text" data-model="somearray" />
+						<label>The things I like to drink and eat</label>
+						<select multiple class="form-control" data-model="somearray">
+						  <option>chips</option>
+						  <option>beer</option>
+						  <option>candy</option>
+						  <option>pop</option>
+						  <option>flowers</option>
+						</select>
 					</div>
 					<div class="form-group">
 						<label style="display:block;">Bootstrap Buttons</label>
@@ -125,21 +132,50 @@ hr { border-top: 2px solid #ffffff; }
 						<label>Property in a content-editable div</label>
 						<div id="editohya" style="" contenteditable="true" data-model="property"></div>
 					</div>
+				</div>
+				<a class="btn btn-success btn-lg" href="https://github.com/froggr/terry.binder.js">GITHUB BAM!</a>
 			</div>
-			<div class="col-sm-6">
-				<h2 class="rainbow">Check out my sweetness that is bindings!</h2>
-				<figure class="highlight">
-					<p>This is a <span data-model="property"></span></p>
-					<p>I just wanna eat <span data-model="somearray"></span></p>
-					<p>What's my gender? <span data-model="gender"></span>!</p>
-					<p>You will pay me $<span data-model="select"></span> million dollars!</p>
-				</figure>
-				<h1>The Model JSON:</h1>
-				<pre id="jsondump"></pre>
+			</div>
+			<div class="col-sm-8">
+					<h2 class="rainbow">Check out my sweetness that is bindings!</h2>
+					<figure class="highlight">
+						<p>This is a <span data-model="property"></span></p>
+						<p>I just wanna eat <span data-model="somearray" data-format="arrayjoin"></span></p>
+						<p>What's my gender? <span data-model="gender"></span>!</p>
+						<p>You will pay me $<span data-model="select"></span> million dollars!</p>
+					</figure>
+					<h1>The Model JSON:</h1>
+					<pre id="jsondump"></pre>
+		
+				<!-- The Docs! -->
+				<div class="page-header">The Docs</div>
+				<p class="lead">I will try and keep this as simple as possible...</p>
+				<section>
+					<p class="lead"><strong>1.) Who is Terry?</strong></p>
+					<p><img class="picofterry" src="./assets/img/itsterry.gif"></p>
+					<p>Terry doesn't give no... snacks. He keeps it simple, and if its not simple, he flips the <em>flubber</em> out!</p> So it is for Terry that this... thing was put together. 
+					<strong>'At a boy Terry!</strong></p>
+				</section>
+				<section>
+					<p class="lead"><strong>2.) What does this thing do?</strong></p>
+					<p>Well, this allows you to simply bind data from a javascript object to html elements, and get the data back again.</p>
+					<p><strong>YA YA! I KNOW!</strong> Another one of these right? Why not use angular? Why not knockout or backbone or react? Terry wants simple! So thats what Terry gets!
+					Sometime when you've had bout' 30 too many, you want something quick and dirty to get the job done.</p>
+					<blockquote>
+						<p>Why get dressed when you can go out in your underpants?</p>
+						<small class="rainbow">Terry</small>
+					</blockquote>
+					<ul>
+						<li>The binder connects a JSON with HTML elements according to a <code>data-model</code> attribute</li>
+						<li>The <code>data-model</code> contains the property name from the object thats being binded</li>
+						<li><code>&lt;input&gt;</code>, <code>&lt;select&gt;</code>, <code>&lt;div contenteditable="true"&gt;</code> and <code>&lt;textarea&gt;</code> work with two-way data-bindings</li>
+						<li>The <code>data-model</code> is updated when data changes either through and input or by modifying the model manually. I'll get to that.</li>
+					</ul>
+				</section>
+				<div class="page-header">More on the way!</div>
 			</div>
 		</div>
 		<div class="form-group text-center" style="padding-top: 20px;">
-			<a class="btn btn-success btn-lg" href="https://github.com/froggr/terry.binder.js">GITHUB BAM!</a>
 		</div>
 	</div>
 </div>
@@ -166,8 +202,10 @@ $('#container').on('model-update', function(e, model, path) {
 });
 
 $.bindings.format = function(path, value, format, model, name) {
-			if (value instanceof Array)
+			if ((value instanceof Array)&&(format == 'arrayjoin')){
+					console.log(format);
 					return value.join(', ');
+			}
 			return value;
 };
 
@@ -200,6 +238,5 @@ _386 = { onePass: true, speedFactor: 1.25 };
 
 
 
-</body>
 
 </html>
