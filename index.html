@@ -26,11 +26,12 @@ input.form-control, select.form-control{ background: white; color: black; min-he
 figure { color: yellow;background: teal; padding: 20px;	margin-bottom: 20px;}
 div#editohya {	background-color: white; padding:15px; height: 50px; width:100%;color:black;margin-bottom:15px; }
 .picofterry{ height: 200px; margin: 0 auto; display: block; }
-.affix { top: 30px; }
+.affix { top: 30px; width: inherit; padding-right: 25px; }
 hr, section { border-top: 2px solid #ffffff; }
 section { padding: 20px 0; }
 blockquote { color: #fff; background: green; }
 [selected] {background-color: black; color: grey;}
+ol>li { list-style-type: decimal; padding-bottom: 10px;}
 @-webkit-keyframes rainbow {
 	0% {color: #ff0000;}
 	10% {color: #ff8000;}
@@ -91,109 +92,142 @@ blockquote { color: #fff; background: green; }
   <![endif]-->
 
 
-<div class="container-fluid">
-	<div class="jumbotron"><img src="./assets/img/terry.gif" class="terrylogo"/><small>a simple jQuery data binder. Originally forked from <em>petersirka/jquery.bindings</em></small>
-	</div>
-	<div id="container" data-name="obj">
-		<p>Just write some stuff in this super ghetto-oldschool-retro form i got her and see it be bound!</p>
-		<hr>
-		<div class="row-fluid">
-			<div class="col-sm-4">
-				<div id="theform" data-spy="affix" data-offset-top="420">
-				<div class="bs-example">
-					<h1>The Form:</h1>
-					<div class="form-group">
-						<label>Some Property</label>
-						<input class="form-control" type="text" data-model="property" />
-					</div>
-					<div class="form-group">
-						<label>The things I like to drink and eat</label>
-						<select multiple class="form-control" data-model="somearray">
-						  <option>chips</option>
-						  <option>beer</option>
-						  <option>candy</option>
-						  <option>pop</option>
-						  <option>flowers</option>
-						</select>
-					</div>
-					<div class="form-group">
-						<label style="display:block;">Bootstrap Buttons</label>
-						<div class="btn-group" data-toggle="buttons">
-							<label class="btn btn-danger" for="gender">Male<input type="radio" id="gender" name="gender" data-model="gender" value="male"></label>
-							<label class="btn btn-danger" for="gender">Female <input type="radio" name="gender" id="gender" data-model="gender" value="female"></label>
-							<label class="btn btn-danger" for="gender">Other<input type="radio" name="gender" id="gender" data-model="gender" value="other"></label>
-						</div>
-					</div>
-					<div class="form-group">
-						<label>A select</label>
-						<select data-model="select" class="form-control"> <option>1</option> <option>2</option> <option>3</option> <option>4</option> <option>5</option> </select>
-					</div>
-					<div class="form-group">
-						<label>Property in a content-editable div</label>
-						<div id="editohya" style="" contenteditable="true" data-model="property"></div>
-					</div>
-				</div>
-				<a class="btn btn-success btn-lg" href="https://github.com/froggr/terry.binder.js">GITHUB BAM!</a>
-			</div>
-			</div>
-			<div class="col-sm-8">
-					<h2 class="rainbow">Check out my sweetness that is bindings!</h2>
-					<figure class="highlight">
-						<p>This is a <span data-model="property"></span></p>
-						<p>I just wanna eat <span data-model="somearray" data-format="arrayjoin"></span></p>
-						<p>What's my gender? <span data-model="gender"></span>!</p>
-						<p>You will pay me $<span data-model="select"></span> million dollars!</p>
-					</figure>
-					<h1>The Model JSON:</h1>
-					<pre id="jsondump"></pre>
-		
-				<!-- The Docs! -->
-				<div class="page-header">The Docs</div>
-				<p class="lead">I will try and keep this as simple as possible...</p>
-				<section>
-					<p class="lead"><strong>1.) Who is Terry?</strong></p>
-					<p><img class="picofterry" src="./assets/img/itsterry.gif"></p>
-					<p>Terry doesn't give no... snacks. He keeps it simple, and if its not simple, he flips the <em>flubber</em> out!</p> So it is for Terry that this... thing was put together. 
-					<strong>'At a boy Terry!</strong></p>
-				</section>
-				<section>
-					<p class="lead"><strong>2.) What does this thing do?</strong></p>
-					<p>Well, this allows you to simply bind data from a javascript object to html elements, and get the data back again.</p>
-					<p><strong>YA YA! I KNOW!</strong> Another one of these right? Why not use angular? Why not knockout or backbone or react? Terry wants simple! So thats what Terry gets!
-					Sometime when you've had bout' 30 too many, you want something quick and dirty to get the job done.</p>
-					<blockquote>
-						<p>Why get dressed when you can go out in your underpants?</p>
-						<small class="rainbow">Terry</small>
-					</blockquote>
-					<ul>
-						<li>The binder connects a JSON with HTML elements according to a <code>data-model</code> attribute</li>
-						<li>The <code>data-model</code> contains the property name from the object thats being binded</li>
-						<li><code>&lt;input&gt;</code>, <code>&lt;select&gt;</code>, <code>&lt;div contenteditable="true"&gt;</code> and <code>&lt;textarea&gt;</code> work with two-way data-bindings</li>
-						<li>The <code>data-model</code> is updated when data changes either through and input or by modifying the model manually. I'll get to that.</li>
-					</ul>
-				</section>
-				<div class="page-header">More on the way!</div>
-			</div>
-		</div>
-		<div class="form-group text-center" style="padding-top: 20px;">
-		</div>
-	</div>
-</div>
+  <div class="container" >
+	  <div class="jumbotron"><img src="./assets/img/terry.gif" class="terrylogo"/><small>a simple jQuery data binder. Originally forked from <em>petersirka/jquery.bindings</em></small>
+	  </div>
+	  <div id="container" data-model-name="obj">
+		  <p>Just write some stuff in this super ghetto-oldschool-retro form i got her and see it be bound!</p>
+		  <hr>
+		  <div class="row">
+			  <div class="col-sm-4">
+				  <div id="theform">
+					  <div class="bs-example">
+						  <h1>The Form:</h1>
+						  <div class="form-group">
+							  <label>Some Property</label>
+							  <input class="form-control" type="text" data-model="property" />
+						  </div>
+						  <div class="form-group">
+							  <label>The things I like to drink and eat</label>
+							  <select multiple class="form-control" data-model="somearray">
+								  <option>chips</option>
+								  <option>beer</option>
+								  <option>candy</option>
+								  <option>pop</option>
+								  <option>flowers</option>
+							  </select>
+						  </div>
+						  <div class="form-group">
+							  <label style="display:block;">Bootstrap Buttons</label>
+							  <div class="btn-group" data-toggle="buttons">
+								  <label class="btn btn-danger" for="gender">Male<input type="radio" id="gender" name="gender" data-model="gender" value="male"></label>
+								  <label class="btn btn-danger" for="gender">Female <input type="radio" name="gender" id="gender" data-model="gender" value="female"></label>
+								  <label class="btn btn-danger" for="gender">Other<input type="radio" name="gender" id="gender" data-model="gender" value="other"></label>
+							  </div>
+						  </div>
+						  <div class="form-group">
+							  <label>A select</label>
+							  <select data-model="select" class="form-control"> <option>1</option> <option>2</option> <option>3</option> <option>4</option> <option>5</option> </select>
+						  </div>
+						  <div class="form-group">
+							  <label>Property in a content-editable div</label>
+							  <div id="editohya" style="" contenteditable="true" data-model="property"></div>
+						  </div>
+					  </div>
+					  <a class="btn btn-success btn-lg" href="https://github.com/froggr/terry.binder.js">GITHUB BAM!</a>
+				  </div>
+			  </div><!--end row sm-4-->
+			  <div class="col-sm-8">
+				  <h2 class="rainbow">Check out my sweetness that is bindings!</h2>
+				  <figure class="highlight">
+					  <p>This is a <span data-model="property"></span></p>
+					  <p>I just wanna eat <span data-model="somearray" data-format="arrayjoin"></span></p>
+					  <p>What's my gender? <span data-model="gender"></span>!</p>
+					  <p>You will pay me $<span data-model="select"></span> million dollars!</p>
+				  </figure>
+				  <h1>The Model JSON:</h1>
+				  <pre id="jsondump"></pre>
+			  </div>
+		  </div><!--end row -->
+	  </div><!-- end obj model -->
+
+	  <!-- The Docs! -->
+	  <div class="row">
+		  <div class="col-sm-9">
+			  <section id="docs">
+				  <div class="page-header">The Docs - UNDER CONSTRUCTION</div>
+				  <p class="lead">I will try and keep this as simple as possible...</p>
+				  <section>
+					  <p class="lead"><strong>1.) Who is Terry?</strong></p>
+					  <p><img class="picofterry" src="./assets/img/itsterry.gif"></p>
+					  <p>Terry doesn't give no... snacks. He keeps it simple, and if its not simple, he flips the <em>flubber</em> out!</p> So it is for Terry that this... thing was put together. 
+					  <strong>'At a boy Terry!</strong></p>
+				  </section>
+				  <section>
+					  <p class="lead"><strong>2.) What does this thing do?</strong></p>
+					  <p>Well, this allows you to simply bind data from a javascript object to html elements, and get the data back again.</p>
+					  <p><strong>YA YA! I KNOW!</strong> Another one of these right? Why not use angular? Why not knockout or backbone or react? Terry wants simple! So thats what Terry gets!
+					  Sometime when you've had bout' 30 too many, you want something quick and dirty to get the job done.</p>
+					  <blockquote>
+						  <p>Why get dressed when you can go out in your underpants?</p>
+						  <small class="rainbow">Terry</small>
+					  </blockquote>
+					  <ul>
+						  <li>The binder connects a JSON with HTML elements according to a <code>data-model</code> attribute</li>
+						  <li>The <code>data-model</code> contains the property name from the object thats being binded</li>
+						  <li><code>&lt;input&gt;</code>, <code>&lt;select&gt;</code>, <code>&lt;div contenteditable="true"&gt;</code> and <code>&lt;textarea&gt;</code> work with two-way data-bindings</li>
+						  <li>The <code>data-model</code> is updated when data changes either through and input or by modifying the model manually. I'll get to that.</li>
+					  </ul>
+				  </section>
+			  </section>
+			  <section id="basics">
+				  <div class="page-header">The Basics</div>
+				  <p><strong>First thing</strong> - Include the jQuery (>1.1) and then this script.<p>
+				  <p>
+				  <strong>Then define bindings via html attributes</strong>
+				  <ol>
+					  <li>Start by defining the name of the model with a <code>data-model-name</code> attribute in what we'll call the <em>parent</em> element</li>
+					  <ul>
+						  <li>Like this: <code>&lt;div id="somediv" <span class="rainbow">data-model-name="muppetBabies"</span>&gt;...&lt;div&gt;</code> where you're being a werido and have data about muppet babies... weird.</li>
+					  </ul>
+					  <li>Next you add some html entities (inputs, selects, textareas, divs, whatever!) <strong>inside</strong> of the <em>parent element</em> and bind them to a model property using the <code>data-model</code> attribute</li>
+					  <li>So you'll end up with something like this:<br>
+					  <pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>container<span class="pl-pds">"</span></span> <span class="rainbow">data-model-name</span>="muppetBabies"&gt;
+	 &lt;<span class="pl-ent">input</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span> <span class="pl-e rainbow">data-model</span>="coolness_level"</span> /&gt;
+	 &lt;<span class="pl-ent">div</span> <span class="pl-e rainbow">data-model</span>="muppet_name"</span>&gt;&lt;/<span class="pl-ent">div</span>&gt;
+&lt;/<span class="pl-ent">div</span>&gt;</pre></li>
+
+				  </ol>
+				  </p>
+			  </section>
+		  </div><!-- end col-sm-8 DOCS -->
+		  <div class="col-sm-3" id="docsnav">
+			  <ul class="nav nav-tabs nav-stacked" data-spy="affix" data-offset-top="950">
+				  <li><a href="#docs">Intro</a></li>
+				  <li><a href="#basics">The Basics</a></li>
+			  </ul>
+		  </div>
+	  </div>
+  </div>
 
 <script   src="https://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
 <script src="./terry-binder.js"></script>
 <script src="./assets/js/bootstrap.min.js"></script>
 
 <script>
 
-var obj = {
+$.binder.model["obj"] = {
 				property : 'test',
 				somearray: ["chips", "candy", "pop"],
 				gender: 'male', 
 				select: '2'
 			};
-$('#container').bindings('create')(obj, '#container');
+
+$.binder.model["second"] = { title : 'oh yeah!' };
+
+
+//$('#container').binder('create')(obj, '#container');
+$.fn.binder('create');
 
 $('#container').on('model-update', function(e, model, path) {
 	var str = JSON.stringify(model, undefined, 4)
@@ -201,7 +235,7 @@ $('#container').on('model-update', function(e, model, path) {
     $('#jsondump').html(cold);
 });
 
-$.bindings.format = function(path, value, format, model, name) {
+$.binder.format = function(path, value, format, model, name) {
 			if ((value instanceof Array)&&(format == 'arrayjoin')){
 					console.log(format);
 					return value.join(', ');
@@ -228,7 +262,7 @@ function syntaxHighlight(json) {
     });
 }
 
-	$('#jsondump').html(syntaxHighlight(JSON.stringify(obj, undefined, 4)));
+	$('#jsondump').html(syntaxHighlight(JSON.stringify($.binder.model.obj, undefined, 4)));
     
 
 //var test = $('#container').bindings('model');

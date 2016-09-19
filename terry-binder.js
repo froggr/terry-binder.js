@@ -1,52 +1,80 @@
+/***************************************************************************
+* THE TERRY BINDER!
+* froggr - 2016
+* 
+* TODO: 
+*   - define models in binder function?
+	 - define what path and schema actually do. where does it actually bind back to original object?
+*   - if no jQuery element, find all [data-model-name]s and initialize bind
+*   - for blank model, create 'schema' based on [data-model] within self
+*
+******************************************************************************/
+var terrybinder_cache = {};
+$.binder = {'model' : {}};
 
-
-var jquerybindings_cache = {};
-$.bindings = {};
-
-$.fn.bindings = function (type) {
+$.fn.binder = function (type, schema) {
     var self = this;
 
-    if (typeof (type) === 'undefined')
+	if(this.selector == ""){
+		var models = $('[data-model-name]');
+		$('[data-model-name]').each(function(i){ 
+			var schema = $(this).attr('data-model-name');
+			
+			/* Here you should check the model exists */
+			
+    		if (typeof ($.binder.model[schema]) === 'undefined')
+				binder_build_model.call(schema);		
+			
+			$('[data-model-name="'+schema+'"]').binder(type, schema);
+		});
+		return;
+	}
+
+   if (typeof (type) === 'undefined')
         type = 'model';
+	if(schema == undefined)
+   	var schema = self.attr('data-model-name');
 
-    var schema = self.attr('data-name');
+	if (typeof ($.binder.model[schema]) === 'undefined')
+				binder_build_model.call(schema);		
 
+	var model = $.binder.model[schema];
     switch (type) {
         case 'create':
-            return (function (model, template) { return bindings_create.call(self, model, template, schema); });
+            return binder_create.call(self, model, template = undefined, schema); 
         case 'change':
             return (function (value) { if (typeof (value) !== 'boolean') return self.data('isChange') || false; return self.data('isChange', value); });
         case 'refresh':
-            bindings_refresh.call(self, schema);
+            binder_refresh.call(self, schema);
             return;
         case 'destroy':
-            bindings_destroy.call(self, schema);
+            binder_destroy.call(self, schema);
             return;
         case 'default':
-            bindings_default.call(self, schema);
+            binder_default.call(self, schema);
             return;
         case 'validate':
         case 'validation':
-            return bindings_validate.call(self, schema);
+            return binder_validate.call(self, schema);
         case 'set':
-            return (function (path, value) { return bindings_set.call(self, path, value, schema); });
+            return (function (path, value) { return binder_set.call(self, path, value, schema); });
         case 'get':
-            return (function (path) { return bindings_get.call(self, path, schema); });
+            return (function (path) { return binder_get.call(self, path, schema); });
         case 'update':
-            return (function (model) { return bindings_create.call(self, model, schema); });
+            return (function (model) { return binder_create.call(self, model, schema); });
         case 'model':
-            return bindings_create.call(self, null, null, schema);
+            return binder_create.call(self, null, null, schema);
     }
-
     return self;
 };
 
-function bindings_create(model, template, schema) {
+function binder_create(model, template, schema) {
     var self = this;
 
     if (typeof (model) === 'undefined' || model === null)
-        return $.extend({}, self.data('model'));
+	    return $.extend({}, self.data('model'));
 
+	 console.log(model);
     var tmp = self.data('model');
 
     self.data('isChange', false);
@@ -60,7 +88,7 @@ function bindings_create(model, template, schema) {
         else
             self.data('model', model);
 
-        bindings_refresh.call(self, schema);
+        binder_refresh.call(self, schema);
         self.trigger('model-update', [model, schema]);
         return self;
     }
@@ -70,7 +98,7 @@ function bindings_create(model, template, schema) {
             self.trigger('template-download-begin', [template]);
             $.get(template, {}, function (data) {
                 self.trigger('template-download-end', [template, data]);
-                bindings_create.call(self, self.data('model'), data);
+                binder_create.call(self, self.data('model'), data);
             });
             return;
         }
@@ -85,22 +113,21 @@ function bindings_create(model, template, schema) {
     self.data('model', model);
     
     self.on('input paste cut change', 'input[data-model],textarea[data-model],select[data-model], div[data-model][contenteditable="true"]', function (e) {
-        bindings_internal_change.call(this, e, self, self.data('model'), schema);
+        binder_internal_change.call(this, e, self, self.data('model'), schema);
     });
 
 
-    bindings_refresh.call(self, schema);
+    binder_refresh.call(self, schema);
 
-    bindings_delay(function() {
+    binder_delay(function() {
         self.trigger('model-create', [model, schema]);
     });
 
-    return bindings_rebind.call(self);
+    return binder_rebind.call(self);
 }
 
-function bindings_internal_change(e, self, model, schema) {
+function binder_internal_change(e, self, model, schema) {
     var el = $(this);
-
     var name = el.attr('data-model');
     var type = el.attr('type');
 	 if(el.attr('contenteditable') == 'true')
@@ -118,27 +145,27 @@ function bindings_internal_change(e, self, model, schema) {
         value = this.checked;
 
     var prepare = el.attr('data-prepare');
-    var value_new = $.bindings.prepare.call(el, name, value, prepare, model, schema);
+    var value_new = $.binder.prepare.call(el, name, value, prepare, model, schema);
 
     if (typeof (value_new) === 'undefined')
-        value_new = $.bindings._prepare.call(el, name, value, prepare, model, schema);
+        value_new = $.binder._prepare.call(el, name, value, prepare, model, schema);
 
-    var r = $.bindings._validation.call(el, name, value_new, model, schema);
-    $.bindings.watch.call(el, r, name, value_new, model, schema);
+    var r = $.binder._validation.call(el, name, value_new, model, schema);
+    $.binder.watch.call(el, r, name, value_new, model, schema);
 
     if (!r)
         return;
 
-    bindings_setvalue.call(el, model, name, value_new, schema);
+    binder_setvalue.call(el, model, name, value_new, schema);
 
     if (type == 'radio') {
         this.checked = value;
 	 }
 
-    bindings_rebind.call(self, schema);
+    binder_rebind.call(self, schema);
     self.data('isChange', true);
 
-    bindings_delay(function() {
+    binder_delay(function() {
         self.trigger('model-change', [name, value_new, model, schema, el]);
         self.trigger('model-update', [model, name, schema]);
     });
@@ -146,9 +173,9 @@ function bindings_internal_change(e, self, model, schema) {
 
 
 
-function bindings_destroy() {
+function binder_destroy() {
     var self = this;
-    var schema = self.attr('data-name');
+    var schema = self.attr('data-model-name');
     self.removeData('model');
     self.removeData('default');
     self.removeData('isChange');
@@ -157,26 +184,26 @@ function bindings_destroy() {
     return self;
 }
 
-function bindings_default() {
+function binder_default() {
     var self = this;
     var model = self.data('default');
-    var schema = self.attr('data-name');
+    var schema = self.attr('data-model-name');
     self.data('model', $.extend({}, model));
     self.data('isChange', false);
-    bindings_refresh.call(self, schema);
-    bindings_delay(function() {
+    binder_refresh.call(self, schema);
+    binder_delay(function() {
         self.trigger('model-default', [model, schema]);
     });
     return self;
 }
 
-function bindings_validate(schema) {
+function binder_validate(schema) {
     var self = this;
     var model = self.data('model');
     var error = [];
 
-    bindings_reflection(model, function (path, value, key) {
-        var r = $.bindings._validation(path, value, schema);
+    binder_reflection(model, function (path, value, key) {
+        var r = $.binder._validation(path, value, schema);
         if (typeof (r) === 'undefined' || r === null || r)
             return;
         error.push({ path: path, value: value, element: self.find('input[data-model="' + path + '"],textarea[data-model="' + path + '"],select[data-model="' + path + '"]') });
@@ -189,7 +216,7 @@ function bindings_validate(schema) {
     return self;
 }
 
-function bindings_set(path, value, schema) {
+function binder_set(path, value, schema) {
     var self = this;
     var model = self.data('model');
 
@@ -197,31 +224,31 @@ function bindings_set(path, value, schema) {
         return self;
 
     if (typeof (value) === 'function')
-        value = value(bindings_getvalue(model, path, schema));
+        value = value(binder_getvalue(model, path, schema));
 
-    var r = $.bindings._validation(path, value, model, schema);
-    $.bindings.watch.call($('input[data-model="' + path + '"],textarea[data-model="' + path + '"],select[data-model="' + path + '"]'), r, path, value, model, schema);
+    var r = $.binder._validation(path, value, model, schema);
+    $.binder.watch.call($('input[data-model="' + path + '"],textarea[data-model="' + path + '"],select[data-model="' + path + '"]'), r, path, value, model, schema);
 
     if (!r)
         return self;
 
-    if (bindings_setvalue(model, path, value, schema))
-        bindings_refresh.call(self, schema);
+    if (binder_setvalue(model, path, value, schema))
+        binder_refresh.call(self, schema);
 
     self.data('isChange', true);
     self.trigger('model-update', [model, path, schema]);
     return self;
 }
 
-function bindings_get(path, schema) {
+function binder_get(path, schema) {
     var self = this;
     var model = self.data('model');
     if (typeof (model) === 'undefined')
         return;
-    return bindings_getvalue(model, path, schema);
+    return binder_getvalue(model, path, schema);
 }
 
-function bindings_rebind_force(schema) {
+function binder_rebind_force(schema) {
     var self = this;
     var model = self.data('model');
 
@@ -236,16 +263,16 @@ function bindings_rebind_force(schema) {
 
         var name = el.attr('data-model');
         var custom = el.attr('data-custom');
-        var value = bindings_getvalue(model, name);
+        var value = binder_getvalue(model, name);
 
         if (typeof (custom) !== 'undefined') {
-            $.bindings.custom.call(el, name, value, custom || '', model, schema);
+            $.binder.custom.call(el, name, value, custom || '', model, schema);
             return;
         }
 
         var attr = el.attr('data-encode');
         var isRaw = typeof (attr) !== 'undefined' && attr === 'false';
-        var val = $.bindings.format.call(el, name, value, el.attr('data-format'), model, schema);
+        var val = $.binder.format.call(el, name, value, el.attr('data-format'), model, schema);
 
         if (typeof (val) === 'undefined')
             val = '';
@@ -272,7 +299,7 @@ function bindings_rebind_force(schema) {
     return self;
 }
 
-function bindings_rebind(schema) {
+function binder_rebind(schema) {
     var self = this;
     var model = self.data('model');
 
@@ -285,14 +312,14 @@ function bindings_rebind(schema) {
         clearTimeout(timeout);
 
     var timeout = setTimeout(function () {
-        bindings_rebind_force.call(self, schema);
+        binder_rebind_force.call(self, schema);
     }, 100);
 
     self.data('timeout_rebind', timeout);
     return self;
 }
 
-function bindings_refresh(schema) {
+function binder_refresh(schema) {
     var self = this;
     var model = self.data('model');
 
@@ -304,16 +331,16 @@ function bindings_refresh(schema) {
         clearTimeout(timeout);
 
     var timeout = setTimeout(function () {
-        bindings_refresh_force.call(self, schema);
+        binder_refresh_force.call(self, schema);
     }, 100);
 
     self.data('timeout_refresh', timeout);
     return self;
 }
 
-function bindings_refresh_force(schema) {
+function binder_refresh_force(schema) {
     var self = this;
-
+	
     var model = self.data('model');
 
     if (typeof (model) === 'undefined') {
@@ -334,7 +361,7 @@ function bindings_refresh_force(schema) {
                 break;
         }
 
-        var value = bindings_getvalue(model, name, schema);
+        var value = binder_getvalue(model, name, schema);
         var format = el.attr('data-format');
         var custom = el.attr('data-custom');
 
@@ -342,11 +369,11 @@ function bindings_refresh_force(schema) {
             value = el.attr('data-default');
 
         if (typeof (custom) !== 'undefined') {
-            $.bindings.custom.call(el, name, value, custom || '', model, schema);
+            $.binder.custom.call(el, name, value, custom || '', model, schema);
             return;
         }
 
-        var val = $.bindings.format.call(self, name, value, format, model, schema);
+        var val = $.binder.format.call(self, name, value, format, model, schema);
 
         if (isIO) {
             var type = el.attr('type');
@@ -388,13 +415,13 @@ function bindings_refresh_force(schema) {
     return self;
 }
 
-$.bindings.prepare = function (path, value, format, model, schema) { }
+$.binder.prepare = function (path, value, format, model, schema) { }
 
-$.bindings._prepare = function (path, value, format, model, schema) {
+$.binder._prepare = function (path, value, format, model, schema) {
     if (typeof (value) !== 'string')
         return value;
 
-    if (bindings_getvalue(model, path) instanceof Array) {
+    if (binder_getvalue(model, path) instanceof Array) {
         var arr = value.split(',');
         var length = arr.length;
         var tmp = [];
@@ -419,49 +446,47 @@ $.bindings._prepare = function (path, value, format, model, schema) {
     return parseFloat(value);
 };
 
-$.bindings.format = function (path, value, format, model, schema) {
+$.binder.format = function (path, value, format, model, schema) {
     if (value instanceof Array)
         return value.join(', ');
     return value;
 };
 
-$.bindings.custom = function (path, value, custom, model, schema) { };
-$.bindings.watch = function (isValid, path, value, model, schema) { };
+$.binder.custom = function (path, value, custom, model, schema) { };
+$.binder.watch = function (isValid, path, value, model, schema) { };
 
-$.bindings.validation = function (path, value, model, schema) {
+$.binder.validation = function (path, value, model, schema) {
     return true;
 };
 
-$.bindings._validation = function (path, value, model, schema) {
-    var r = $.bindings.validation(path, value, model, schema);
+$.binder._validation = function (path, value, model, schema) {
+    var r = $.binder.validation(path, value, model, schema);
     if (typeof (r) === 'undefined' || r === null)
         r = true;
     return r === true;
 };
 
-function bindings_setvalue(obj, path, value, schema) {
-
+function binder_setvalue(obj, path, value, schema) {
     path = path.split('.');
     var length = path.length;
     var current = obj;
 
     for (var i = 0; i < length - 1; i++) {
-        current = bindings_findpipe(current, path[i]);
+        current = binder_findpipe(current, path[i]);
         if (typeof (current) === 'undefined')
             return false;
     }
 
-    current = bindings_findpipe(current, path[length - 1], value);
+    current = binder_findpipe(current, path[length - 1], value);
     return true;
 }
 
-function bindings_findpipe(current, name, value) {
+function binder_findpipe(current, name, value) {
     var beg = name.lastIndexOf('[');
     var pipe;
     var index = -1;
 
     if (beg !== -1) {
-
         index = parseInt(name.substring(beg + 1).replace(/\]\[/g, ''));
         if (isNaN(index))
             return;
@@ -489,12 +514,12 @@ function bindings_findpipe(current, name, value) {
     return pipe;
 }
 
-function bindings_getvalue(obj, path, schema) {
+function binder_getvalue(obj, path, schema) {
     path = path.split('.');
     var length = path.length;
     var current = obj;
     for (var i = 0; i < path.length; i++) {
-        current = bindings_findpipe(current, path[i]);
+        current = binder_findpipe(current, path[i]);
         if (typeof (current) === 'undefined')
             return;
     }
@@ -535,7 +560,7 @@ if (!String.prototype.encode) {
     };
 }
 
-function bindings_reflection(obj, fn, path) {
+function binder_reflection(obj, fn, path) {
     path = path || '';
     for (var k in obj) {
         if (typeof (k) !== 'string')
@@ -550,14 +575,22 @@ function bindings_reflection(obj, fn, path) {
         fn(current, obj[k], k);
 
         if (type === 'object')
-            bindings_reflection(obj[k], fn, current);
+            binder_reflection(obj[k], fn, current);
     }
 }
 
-function bindings_delay(fn) {
+function binder_delay(fn) {
     setTimeout(function() {
         fn();
     }, 120);
+}
+
+function binder_build_model(schema){
+	$.binder.model[schema] = {};
+   $('[data-model-name="'+schema+'"]').find("[data-model]").each(function(){
+        var key = $(this).attr("data-model");
+        $.binder.model[schema][key] = "";        
+    });
 }
 
 
