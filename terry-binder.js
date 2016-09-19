@@ -12,7 +12,7 @@
 var terrybinder_cache = {};
 $.binder = {'model' : {}};
 
-$.fn.binder = function (type, schema) {
+$.fn.binder = function (type, schema, object) {
     var self = this;
 
 	if(this.selector == ""){
@@ -22,8 +22,9 @@ $.fn.binder = function (type, schema) {
 			
 			/* Here you should check the model exists */
 			
-    		if (typeof ($.binder.model[schema]) === 'undefined')
-				binder_build_model.call(schema);		
+			if (typeof ($.binder.model[schema]) == 'undefined'){
+				binder_build_model(schema);		
+			}
 			
 			$('[data-model-name="'+schema+'"]').binder(type, schema);
 		});
@@ -32,12 +33,21 @@ $.fn.binder = function (type, schema) {
 
    if (typeof (type) === 'undefined')
         type = 'model';
+	
 	if(schema == undefined)
    	var schema = self.attr('data-model-name');
 
-	if (typeof ($.binder.model[schema]) === 'undefined')
-				binder_build_model.call(schema);		
 
+
+	if (typeof ($.binder.model[schema]) === 'undefined'){
+			console.error(schema);	
+			binder_build_model(schema);		
+	}
+	
+	if (typeof(object) == 'object'){
+		$.binder.model[schema] = object;				
+	}
+	
 	var model = $.binder.model[schema];
     switch (type) {
         case 'create':
@@ -424,7 +434,7 @@ $(document).ready(function(){
 			/* Here you should check the model exists */
 			
     		if (typeof ($.binder.model[schema]) === 'undefined')
-				binder_build_model.call(schema);		
+				binder_build_model(schema);		
 			
 			$('[data-model-name="'+schema+'"]').binder('create', schema);
 
@@ -604,6 +614,7 @@ function binder_delay(fn) {
 
 function binder_build_model(schema){
 	$.binder.model[schema] = {};
+	$('[data-model-name="obj"]').find('[data-model]').each(function(){console.log(1);});
    $('[data-model-name="'+schema+'"]').find("[data-model]").each(function(){
         var key = $(this).attr("data-model");
         $.binder.model[schema][key] = "";        
