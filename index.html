@@ -207,6 +207,25 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
 					  </ul>
 				  </ol>
 				  </p>
+				  <blockquote>TO BIND USE -> $.fn.binder('<span class="text-warning">ACTION</span>,'<span class="text-danger">MODEL_NAME</span>',<span class="text-info">DATA</span>)</blockquote>
+				  <h4>So lets break this down</h4>
+					 <div class="alert alert-warning"><span class="text-info">$.fn</span>.binder('ACTION','MODEL_NAME',DATA);</div>
+					  <ul>
+						  <li>You can either not reference an element (ie leave it as shown above)</li>
+						  <li>or reference an element that has the <code>data-model-name-attribute</code> ie <code>$('#someelement').binder......</code></li>
+						  <li>The first way would either look for instances of <code>[data-model-name]</code> within the page and start model binding for all of them, or relay on the <span class="text-danger">'MODEL_NAME'</span> to find it.</li>
+					  </ul>
+					  <div class="alert alert-warning">$.fn.binder(<span class="text-info">'ACTION'</span>,'MODEL_NAME','DATA');</div>
+					  <h4>This is the action that you want the <strong>Terry Binder</strong> to perform. This is a <strong>STRING</strong> and available actions inclue:</h4>
+					  <ul>
+						  <li><span class="text-danger">create</span> - This action is used to creating the binding between model and html elements</li>
+						  <li><span class="text-danger">model</span> - This action tells the binder to return the model data for use in Javascript. This is the DEFAULT value.</li>
+						  <li><span class="text-danger">refresh</span> - If the model has been modified externally, this action will refresh the data in the HTML</li>
+						  <li><span class="text-danger">update</span> - This action allows you to pass data to the binder to update the model manually</li>
+						  <li><span class="text-danger">destroy</span> - This action destroys the data binding for a particular model</li>
+					  </ul>
+					  <div class="alert alert-warning">$.fn.binder('ACTION',<span class="text-info">'MODEL_NAME'</span>,'DATA');</div>
+					  <h4>This is an OPTIONAL STRING that tell the binder what to name the model, and what <code>data-model-name</code> attribute to use.</h4> 
 			  </section>
 			  <section id="binding">
 				  <div class="page-header">Model Binding!</div>
@@ -224,8 +243,12 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
     &lt;input type=&quot;text&quot; data-model=&quot;property3&quot;&gt;
 &lt;/form&gt;</pre>
 						<h4>To bind, we have a couple options! First would be to call binder on the jQuery form element like this:
-						<h5>$('#someform').binder('create');</h5>
+							<pre class="text-danger">$('#someform').binder('create');</pre>
 						<h4>Through the <code>data-model-name</code>, binder will know the object to be used to build the model.</h4>
+						<h4>Binder will return the model to you when you call:</h4>
+						<pre>$('#someform').binder('model');
+
+//eg. var somevariable = $('#someform').binder('model');</pre>
 						
 
 <blockquote>
