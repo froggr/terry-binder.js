@@ -191,13 +191,12 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
 						  <li>Like this: <code>&lt;div id="somediv" <span class="rainbow">data-model-name="muppetBabies"</span>&gt;...&lt;div&gt;</code> where you're being a werido and have data about muppet babies... weird.</li>
 					  </ul>
 					  <li>Next you add some html entities (inputs, selects, textareas, divs, whatever!) <strong>inside</strong> of the <em>parent element</em> and bind them to a model property using the <code>data-model</code> attribute</li>
-					  <li>If you want to have Terry bind the model when the page loads, just add <code>data-bind-on-load</code> into the parent element with the <code>data-model-name</code> attribute.</li>
+					  <li>If you want to have Terry bind the model when the page loads, just add <code>data-bind-on-load</code> as an attribute somewhere in the page, say in the <code>body</code>?</li>
 					  <li>So you'll end up with something like this:<br>
-					  <pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>container<span class="pl-pds">"</span></span> <span class="rainbow">data-model-name</span>="muppetBabies" <span class="rainbow">data-bind-on-load</span>&gt;
+					  <pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>container<span class="pl-pds">"</span></span> <span class="rainbow">data-model-name</span>="muppetBabies"&gt;
 	 &lt;<span class="pl-ent">input</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span> <span class="pl-e rainbow">data-model</span>="coolness_level"</span> /&gt;
 	 &lt;<span class="pl-ent">div</span> <span class="pl-e rainbow">data-model</span>="muppet_name"</span>&gt;&lt;/<span class="pl-ent">div</span>&gt;
 &lt;/<span class="pl-ent">div</span>&gt;</pre></li>
-						<li></li>
 					  <li>If you DON'T want to have Terry bind the model when the page loads, don't include <code>data-bind-on-load</code> and instead use:</li>
 					  <ul>
 						  <li><code>$.fn.binder('create');</code> to bind all elements with models defined through <code>data-mode-name</code></li>
@@ -206,10 +205,375 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
 						  <li><code>$('#somediv').binder('create','nameOfModel');</code> to bind a particular model in particular element that is defined through the <code>data-mode-name</code> attribute</li>
 						  <li>I hope you're getting the picture...</li>
 					  </ul>
-						<li></li>
 				  </ol>
 				  </p>
 			  </section>
+			  <section id="binding">
+				  <div class="page-header">Model Binding!</div>
+						<h4>To start, you need to define you model. Models are in the form of a JSON object and can be nested but at this point Terry has had a few too many so keep the data structure simple. We can get more complex once he sobers up.</h4>
+						<h4>So lets say we have this model:</h4>
+						 <pre>var obj = { 
+	'property1' : 123,
+	'property2' : 'Terry is da bomb',
+	'property300' : 'oh yeah boom'
+	}</pre>
+						<h4>And we want to bind it to this form:</h4>
+						<pre>&lt;form data-model-name=&quot;someModel&quot; id=&quot;someform&quot;&gt;
+    &lt;input type=&quot;text&quot; data-model=&quot;property1&quot;&gt;
+    &lt;input type=&quot;number&quot; data-model=&quot;property2&quot;&gt;
+    &lt;input type=&quot;text&quot; data-model=&quot;property3&quot;&gt;
+&lt;/form&gt;</pre>
+						<h4>To bind, we have a couple options! First would be to call binder on the jQuery form element like this:
+						<h5>$('#someform').binder('create');</h5>
+						<h4>Through the <code>data-model-name</code>, binder will know the object to be used to build the model.</h4>
+						
+
+<blockquote>
+<p>Create bindings.</p>
+</blockquote>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>create<span class="pl-pds">'</span></span>)({ firstname<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>Peter<span class="pl-pds">'</span></span>, lastname<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>Širka<span class="pl-pds">'</span></span> });
+
+<span class="pl-c">// or (XHR)</span>
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>create<span class="pl-pds">'</span></span>)({ firstname<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>Peter<span class="pl-pds">'</span></span>, lastname<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>Širka<span class="pl-pds">'</span></span> }, <span class="pl-s"><span class="pl-pds">'</span>/my-form.html<span class="pl-pds">'</span></span>);
+
+<span class="pl-c">// or (HTML)</span>
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>create<span class="pl-pds">'</span></span>)({ firstname<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>Peter<span class="pl-pds">'</span></span>, lastname<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>Širka<span class="pl-pds">'</span></span> }, <span class="pl-s"><span class="pl-pds">'</span>&lt;input type="text" data-model="firstname" /&gt;&lt;span&gt;your firstname: &lt;b data-model="first-name"&gt;&lt;/b&gt;&lt;/span&gt;<span class="pl-pds">'</span></span>);
+
+<span class="pl-c">// or (SELECTOR)</span>
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>create<span class="pl-pds">'</span></span>)({ firstname<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>Peter<span class="pl-pds">'</span></span>, lastname<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>Širka<span class="pl-pds">'</span></span> }, <span class="pl-s"><span class="pl-pds">'</span>#template-selector<span class="pl-pds">'</span></span>);</pre></div>
+
+		  </section>
+			 <section id="themodel">
+			  </section>
+				<section id="">
+			  </section>
+				<section id="">
+			  </section>
+				<section id="">
+			  </section>
+				<section id="">
+			  </section>
+				<section id="">
+			  </section>
+				<section id="">
+			  </section>
+			  <section id="old">
+<h4><a id="user-content-bindingsdownloadurl-template" class="anchor" href="#bindingsdownloadurl-template" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>$.bindings('download')(url, [template]);</h4>
+
+<blockquote>
+<p>Create bindings.</p>
+</blockquote>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>download<span class="pl-pds">'</span></span>)(<span class="pl-s"><span class="pl-pds">'</span>/model.json<span class="pl-pds">'</span></span>);
+
+<span class="pl-c">// or</span>
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>download<span class="pl-pds">'</span></span>)(<span class="pl-s"><span class="pl-pds">'</span>/model.json<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>&lt;input type="text" data-model="firstname" /&gt;&lt;span&gt;your firstname: &lt;b data-model="first-name"&gt;&lt;/b&gt;&lt;/span&gt;<span class="pl-pds">'</span></span>);
+
+<span class="pl-c">// or</span>
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>download<span class="pl-pds">'</span></span>)(<span class="pl-s"><span class="pl-pds">'</span>/model.json<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>#template-selector<span class="pl-pds">'</span></span>);</pre></div>
+
+<h4><a id="user-content-bindingsjsonquery-template" class="anchor" href="#bindingsjsonquery-template" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>$.bindings('json')(query, [template]);</h4>
+
+<blockquote>
+<p>Create bindings.</p>
+</blockquote>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text/plain<span class="pl-pds">"</span></span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>model-selector<span class="pl-pds">"</span></span>&gt;{"firstname":"Peter","lastname":"Širka"}&lt;/<span class="pl-ent">script</span>&gt;</pre></div>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>json<span class="pl-pds">'</span></span>)(<span class="pl-s"><span class="pl-pds">'</span>#model-selector<span class="pl-pds">'</span></span>);
+
+<span class="pl-c">// or</span>
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>json<span class="pl-pds">'</span></span>)(<span class="pl-s"><span class="pl-pds">'</span>#model-selector<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>&lt;input type="text" data-model="firstname" /&gt;&lt;span&gt;your firstname: &lt;b data-model="first-name"&gt;&lt;/b&gt;&lt;/span&gt;<span class="pl-pds">'</span></span>);
+
+<span class="pl-c">// or</span>
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>json<span class="pl-pds">'</span></span>)(<span class="pl-s"><span class="pl-pds">'</span>#model-selector<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>#template-selector<span class="pl-pds">'</span></span>);</pre></div>
+
+<h4><a id="user-content-bindingsrefresh" class="anchor" href="#bindingsrefresh" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>$.bindings('refresh');</h4>
+
+<blockquote>
+<p>Refresh values in HTML.</p>
+</blockquote>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>refresh<span class="pl-pds">'</span></span>);</pre></div>
+
+<h4><a id="user-content-bindingsdestroy" class="anchor" href="#bindingsdestroy" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>$.bindings('destroy');</h4>
+
+<blockquote>
+<p>Destroy bindings.</p>
+</blockquote>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>destroy<span class="pl-pds">'</span></span>);</pre></div>
+
+<h4><a id="user-content-bindingsdefault" class="anchor" href="#bindingsdefault" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>$.bindings('default');</h4>
+
+<blockquote>
+<p>Default bindings. As default model is used a model from bindings('create').</p>
+</blockquote>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>default<span class="pl-pds">'</span></span>);</pre></div>
+
+<h4><a id="user-content-bindingsvalidate" class="anchor" href="#bindingsvalidate" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>$.bindings('validate');</h4>
+
+<blockquote>
+<p>Validate a model.</p>
+</blockquote>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>validate<span class="pl-pds">'</span></span>);</pre></div>
+
+<h4><a id="user-content-bindingssetpath-value" class="anchor" href="#bindingssetpath-value" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>$.bindings('set')(path, value);</h4>
+
+<blockquote>
+<p>Rewrite an existing value.</p>
+</blockquote>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>set<span class="pl-pds">'</span></span>)(<span class="pl-s"><span class="pl-pds">'</span>firstname<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Janko<span class="pl-pds">'</span></span>);
+
+<span class="pl-c">// or</span>
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>set<span class="pl-pds">'</span></span>)(<span class="pl-s"><span class="pl-pds">'</span>user.firstname<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Janko<span class="pl-pds">'</span></span>);
+
+<span class="pl-c">// or</span>
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>set<span class="pl-pds">'</span></span>)(<span class="pl-s"><span class="pl-pds">'</span>tags<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">value</span>) {
+    <span class="pl-smi">value</span>.<span class="pl-c1">push</span>(<span class="pl-s"><span class="pl-pds">'</span>new-tag<span class="pl-pds">'</span></span>);
+    <span class="pl-k">return</span> value;
+});</pre></div>
+
+<h4><a id="user-content-bindingsgetpath" class="anchor" href="#bindingsgetpath" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>$.bindings('get')(path);</h4>
+
+<blockquote>
+<p>Get an existing value.</p>
+</blockquote>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>get<span class="pl-pds">'</span></span>)(<span class="pl-s"><span class="pl-pds">'</span>firstname<span class="pl-pds">'</span></span>);
+
+<span class="pl-c">// or</span>
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>get<span class="pl-pds">'</span></span>)(<span class="pl-s"><span class="pl-pds">'</span>user.firstname<span class="pl-pds">'</span></span>);</pre></div>
+
+<h4><a id="user-content-bindingsupdatemodel" class="anchor" href="#bindingsupdatemodel" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>$.bindings('update')(model);</h4>
+
+<blockquote>
+<p>Update a model.</p>
+</blockquote>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>update<span class="pl-pds">'</span></span>)({ firstname<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>Janko<span class="pl-pds">'</span></span>, lastname<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>Izaak<span class="pl-pds">'</span></span> });
+
+<span class="pl-c">// OR</span>
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>update<span class="pl-pds">'</span></span>)(<span class="pl-k">function</span>(<span class="pl-smi">model</span>) {
+    <span class="pl-smi">model</span>.<span class="pl-smi">firstname</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>Peter<span class="pl-pds">'</span></span>;
+    <span class="pl-smi">model</span>.<span class="pl-smi">lastname</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>Širka<span class="pl-pds">'</span></span>;
+    <span class="pl-k">return</span> model;
+});</pre></div>
+
+<h4><a id="user-content-bindingsmodel-or-bindings" class="anchor" href="#bindingsmodel-or-bindings" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>$.bindings('model') or $.bindings();</h4>
+
+<blockquote>
+<p>Get a model.</p>
+</blockquote>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>();
+
+<span class="pl-c">// or</span>
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>model<span class="pl-pds">'</span></span>);
+
+<span class="pl-c">// OUTPUT: { firstname: 'Janko', lastname: 'Izaak' }</span></pre></div>
+
+<h4><a id="user-content-bindingssendurl-options-callbackerr-data" class="anchor" href="#bindingssendurl-options-callbackerr-data" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>$.bindings('send')(url, [options], [callback(err, data)])</h4>
+
+<blockquote>
+<p>Send a model via XHR as application/json.</p>
+</blockquote>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>send<span class="pl-pds">'</span></span>)(<span class="pl-s"><span class="pl-pds">'</span>/form/submit/<span class="pl-pds">'</span></span>);
+
+<span class="pl-c">// or</span>
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>send<span class="pl-pds">'</span></span>)(<span class="pl-s"><span class="pl-pds">'</span>/form/submit/<span class="pl-pds">'</span></span>, { type<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>PUT<span class="pl-pds">'</span></span> });</pre></div>
+
+<h4><a id="user-content-bindingschangeischange" class="anchor" href="#bindingschangeischange" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>$.bindings('change')([isChange])</h4>
+
+<blockquote>
+<p>Was a model changed?</p>
+</blockquote>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>change<span class="pl-pds">'</span></span>)());
+
+<span class="pl-c">// or, custom set:</span>
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">bindings</span>(<span class="pl-s"><span class="pl-pds">'</span>change<span class="pl-pds">'</span></span>)(<span class="pl-c1">true</span>);</pre></div>
+
+<h2><a id="user-content-delegates" class="anchor" href="#delegates" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Delegates</h2>
+
+<h4><a id="user-content-bindingspreparepath-value-format-model-name" class="anchor" href="#bindingspreparepath-value-format-model-name" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a> $.bindings.prepare(path, value, format, model, name)</h4>
+
+<blockquote>
+<p>Prepare current value from an INPUT to a MODEL. Always must return a value.</p>
+</blockquote>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">$</span>.<span class="pl-smi">bindings</span>.<span class="pl-en">prepare</span> <span class="pl-k">=</span> <span class="pl-k">function</span>(<span class="pl-smi">path</span>, <span class="pl-smi">value</span>, <span class="pl-smi">format</span>, <span class="pl-smi">model</span>, <span class="pl-smi">name</span>) {
+    <span class="pl-c">// EXAMPLE:</span>
+    <span class="pl-c">// this === current element with data-model attribute</span>
+    <span class="pl-k">if</span> (path <span class="pl-k">===</span> <span class="pl-s"><span class="pl-pds">'</span>age<span class="pl-pds">'</span></span>)
+        <span class="pl-k">return</span> <span class="pl-c1">parseInt</span>(value);
+    <span class="pl-k">return</span> value;
+};</pre></div>
+
+<h4><a id="user-content-bindingsformatpath-value-format-model" class="anchor" href="#bindingsformatpath-value-format-model" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a> $.bindings.format(path, value, format, model)</h4>
+
+<blockquote>
+<p>Format current value from a MODEL to a HTML. Always must return a value.</p>
+</blockquote>
+
+<div class="highlight highlight-text-html-basic"><pre><span class="pl-c">&lt;!-- ENCODED --&gt;</span>
+&lt;<span class="pl-ent">div</span> <span class="pl-e">data-model</span>=<span class="pl-s"><span class="pl-pds">"</span>age<span class="pl-pds">"</span></span> <span class="pl-e">data-format</span>=<span class="pl-s"><span class="pl-pds">"</span>years &lt;b&gt;old&lt;/b&gt;<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">div</span>&gt;
+
+<span class="pl-c">&lt;!-- OR RAW --&gt;</span>
+&lt;<span class="pl-ent">div</span> <span class="pl-e">data-model</span>=<span class="pl-s"><span class="pl-pds">"</span>age<span class="pl-pds">"</span></span> <span class="pl-e">data-format</span>=<span class="pl-s"><span class="pl-pds">"</span>years &lt;b&gt;old&lt;/b&gt;<span class="pl-pds">"</span></span> <span class="pl-e">data-encode</span>=<span class="pl-s"><span class="pl-pds">"</span>false<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">$</span>.<span class="pl-smi">bindings</span>.<span class="pl-en">format</span> <span class="pl-k">=</span> <span class="pl-k">function</span>(<span class="pl-smi">path</span>, <span class="pl-smi">value</span>, <span class="pl-smi">format</span>, <span class="pl-smi">model</span>, <span class="pl-smi">name</span>) {
+    <span class="pl-c">// EXAMPLE:</span>
+    <span class="pl-c">// this === current element with data-model attribute</span>
+    <span class="pl-k">if</span> (path <span class="pl-k">===</span> <span class="pl-s"><span class="pl-pds">'</span>age<span class="pl-pds">'</span></span>)
+        <span class="pl-k">return</span> value <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">'</span> <span class="pl-pds">'</span></span> <span class="pl-k">+</span> format;
+    <span class="pl-k">return</span> value;
+};</pre></div>
+
+<h4><a id="user-content-bindingscustompath-value-format-model-name" class="anchor" href="#bindingscustompath-value-format-model-name" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a> $.bindings.custom(path, value, format, model, name)</h4>
+
+<blockquote>
+<p>Format current value from a MODEL to HTML. Always must return a value.</p>
+</blockquote>
+
+<div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">data-model</span>=<span class="pl-s"><span class="pl-pds">"</span>age<span class="pl-pds">"</span></span> <span class="pl-e">data-custom</span>=<span class="pl-s"><span class="pl-pds">"</span>custom-value<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">div</span>&gt;</pre></div>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">$</span>.<span class="pl-smi">bindings</span>.<span class="pl-en">custom</span> <span class="pl-k">=</span> <span class="pl-k">function</span>(<span class="pl-smi">path</span>, <span class="pl-smi">value</span>, <span class="pl-smi">custom</span>, <span class="pl-smi">model</span>, <span class="pl-smi">name</span>) {
+    <span class="pl-c">// EXAMPLE:</span>
+    <span class="pl-c">// this === current element with data-model and data-custom attribute</span>
+    <span class="pl-k">if</span> (path <span class="pl-k">===</span> <span class="pl-s"><span class="pl-pds">'</span>age<span class="pl-pds">'</span></span> <span class="pl-k">&amp;&amp;</span> custom <span class="pl-k">===</span> <span class="pl-s"><span class="pl-pds">'</span>custom-value<span class="pl-pds">'</span></span>)
+        <span class="pl-k">return</span> value <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">'</span> years old<span class="pl-pds">'</span></span>;
+    <span class="pl-k">return</span> value;
+};</pre></div>
+
+<h4><a id="user-content-bindingsvalidationpath-value-model-name" class="anchor" href="#bindingsvalidationpath-value-model-name" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a> $.bindings.validation(path, value, model, name)</h4>
+
+<blockquote>
+<p>Validate current value to MODEL. Always must return Boolean.</p>
+</blockquote>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">$</span>.<span class="pl-smi">bindings</span>.<span class="pl-en">validation</span> <span class="pl-k">=</span> <span class="pl-k">function</span>(<span class="pl-smi">path</span>, <span class="pl-smi">value</span>, <span class="pl-smi">model</span>, <span class="pl-smi">name</span>) {
+
+    <span class="pl-k">switch</span> (path) {
+        <span class="pl-k">case</span> <span class="pl-s"><span class="pl-pds">'</span>age<span class="pl-pds">'</span></span>:
+            <span class="pl-k">return</span> value <span class="pl-k">&gt;</span> <span class="pl-c1">17</span> <span class="pl-k">&amp;&amp;</span> value <span class="pl-k">&lt;</span> <span class="pl-c1">50</span>;
+    }
+
+    <span class="pl-k">return</span> <span class="pl-c1">true</span>;
+};</pre></div>
+
+<h4><a id="user-content-bindingswatchisvalid-path-value-model-name" class="anchor" href="#bindingswatchisvalid-path-value-model-name" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a> $.bindings.watch(isValid, path, value, model, name)</h4>
+
+<blockquote>
+<p>Watch an element.</p>
+</blockquote>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">$</span>.<span class="pl-smi">bindings</span>.<span class="pl-en">watch</span> <span class="pl-k">=</span> <span class="pl-k">function</span>(<span class="pl-smi">isValid</span>, <span class="pl-smi">path</span>, <span class="pl-smi">value</span>, <span class="pl-smi">model</span>, <span class="pl-smi">name</span>) {
+    <span class="pl-k">var</span> el <span class="pl-k">=</span> <span class="pl-v">this</span>;
+    <span class="pl-smi">el</span>.<span class="pl-en">toggleClass</span>(<span class="pl-s"><span class="pl-pds">'</span>error<span class="pl-pds">'</span></span>, isValid);
+};</pre></div>
+
+<h2><a id="user-content-events" class="anchor" href="#events" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Events</h2>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-create<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">model</span>) {
+    <span class="pl-c">// Is triggered after $().bindings('create')</span>
+});
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-update<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">model</span>, <span class="pl-smi">path</span>) {
+    <span class="pl-c">// Is triggered after is the model updated</span>
+});
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-change<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">path</span>, <span class="pl-smi">value</span>, <span class="pl-smi">model</span>, <span class="pl-smi">name</span>, <span class="pl-smi">element</span>) {
+    <span class="pl-c">// Is triggered when is changed a value in the model through HTML element</span>
+});
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-destroy<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>) {
+    <span class="pl-c">// Is triggered when is destroyed binding</span>
+});
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-default<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">model</span>) {
+    <span class="pl-c">// set to the default model</span>
+});
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-validate<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">errorlist</span>) {
+    errorlist[<span class="pl-c1">0</span>].<span class="pl-smi">path</span>;
+    errorlist[<span class="pl-c1">0</span>].<span class="pl-c1">value</span>;
+    errorlist[<span class="pl-c1">0</span>].<span class="pl-smi">element</span>;
+});
+
+<span class="pl-c">// OR</span>
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>validate<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">errorlist</span>) {
+    errorlist[<span class="pl-c1">0</span>].<span class="pl-smi">path</span>;
+    errorlist[<span class="pl-c1">0</span>].<span class="pl-c1">value</span>;
+    errorlist[<span class="pl-c1">0</span>].<span class="pl-smi">element</span>;
+});
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-send-begin<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">url</span>, <span class="pl-smi">model</span>) {
+    <span class="pl-c">// begin sending</span>
+});
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-send-end<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">url</span>, <span class="pl-smi">model</span>) {
+    <span class="pl-c">// end sending</span>
+    <span class="pl-c">// IMPORTANT: always is executed</span>
+});
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-send-error<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">status</span>, <span class="pl-smi">url</span>, <span class="pl-smi">model</span>) {
+    <span class="pl-c">// error</span>
+});
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-send<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">data</span>, <span class="pl-smi">model</span>) {
+    <span class="pl-c">// Response data</span>
+});
+
+<span class="pl-c">// OR</span>
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>send<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">data</span>, <span class="pl-smi">model</span>) {
+    <span class="pl-c">// Response data</span>
+});
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-download-begin<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">url</span>) {
+    <span class="pl-c">// begin downloading JSON model</span>
+});
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-download-end<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">url</span>, <span class="pl-smi">data</span>) {
+    <span class="pl-c">// end downloading JSON model</span>
+    <span class="pl-c">// IMPORTANT: always is executed</span>
+});
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-download-error<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">status</span>, <span class="pl-smi">url</span>) {
+    <span class="pl-c">// error</span>
+});
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>template-download-begin<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">url</span>) {
+    <span class="pl-c">// begin downloading template</span>
+});
+
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>template-download-end<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">url</span>, <span class="pl-smi">data</span>) {
+    <span class="pl-c">// end downloading template</span>
+});</pre></div>
+			  </section>
+
+
 		  </div><!-- end col-sm-8 DOCS -->
 		  <div class="col-sm-3" id="docsnav">
 			  <ul class="nav nav-tabs nav-stacked" data-spy="affix" data-offset-top="950">
