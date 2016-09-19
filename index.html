@@ -95,7 +95,7 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
   <div class="container" >
 	  <div class="jumbotron"><img src="./assets/img/terry.gif" class="terrylogo"/><small>a simple jQuery data binder. Originally forked from <em>petersirka/jquery.bindings</em></small>
 	  </div>
-	  <div id="container" data-model-name="obj">
+	  <div id="container" data-model-name="obj" data-bind-on-load>
 		  <p>Just write some stuff in this super ghetto-oldschool-retro form i got her and see it be bound!</p>
 		  <hr>
 		  <div class="row">
@@ -191,12 +191,22 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
 						  <li>Like this: <code>&lt;div id="somediv" <span class="rainbow">data-model-name="muppetBabies"</span>&gt;...&lt;div&gt;</code> where you're being a werido and have data about muppet babies... weird.</li>
 					  </ul>
 					  <li>Next you add some html entities (inputs, selects, textareas, divs, whatever!) <strong>inside</strong> of the <em>parent element</em> and bind them to a model property using the <code>data-model</code> attribute</li>
+					  <li>If you want to have Terry bind the model when the page loads, just add <code>data-bind-on-load</code> into the parent element with the <code>data-model-name</code> attribute.</li>
 					  <li>So you'll end up with something like this:<br>
-					  <pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>container<span class="pl-pds">"</span></span> <span class="rainbow">data-model-name</span>="muppetBabies"&gt;
+					  <pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>container<span class="pl-pds">"</span></span> <span class="rainbow">data-model-name</span>="muppetBabies" <span class="rainbow">data-bind-on-load</span>&gt;
 	 &lt;<span class="pl-ent">input</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span> <span class="pl-e rainbow">data-model</span>="coolness_level"</span> /&gt;
 	 &lt;<span class="pl-ent">div</span> <span class="pl-e rainbow">data-model</span>="muppet_name"</span>&gt;&lt;/<span class="pl-ent">div</span>&gt;
 &lt;/<span class="pl-ent">div</span>&gt;</pre></li>
-
+						<li></li>
+					  <li>If you DON'T want to have Terry bind the model when the page loads, don't include <code>data-bind-on-load</code> and instead use:</li>
+					  <ul>
+						  <li><code>$.fn.binder('create');</code> to bind all elements with models defined through <code>data-mode-name</code></li>
+						  <li><code>$.fn.binder('create','nameOfModel');</code> to bind a particular model in a page that is defined through the <code>data-mode-name</code> attribute</li>
+						  <li><code>$('#somediv').binder('create');</code> to bind all models within a particular element with a model defined through <code>data-mode-name</code></li>
+						  <li><code>$('#somediv').binder('create','nameOfModel');</code> to bind a particular model in particular element that is defined through the <code>data-mode-name</code> attribute</li>
+						  <li>I hope you're getting the picture...</li>
+					  </ul>
+						<li></li>
 				  </ol>
 				  </p>
 			  </section>
@@ -227,7 +237,7 @@ $.binder.model["second"] = { title : 'oh yeah!' };
 
 
 //$('#container').binder('create')(obj, '#container');
-$.fn.binder('create');
+//$.fn.binder('create');
 
 $('#container').on('model-update', function(e, model, path) {
 	var str = JSON.stringify(model, undefined, 4)

@@ -415,6 +415,23 @@ function binder_refresh_force(schema) {
     return self;
 }
 
+/* Bind the model when the page loads */
+$(document).ready(function(){ 
+	$('[data-bind-on-load]').each(function(i){ 
+			var schema = $(this).attr('data-model-name');
+			if (schema == undefined)
+				return;
+			/* Here you should check the model exists */
+			
+    		if (typeof ($.binder.model[schema]) === 'undefined')
+				binder_build_model.call(schema);		
+			
+			$('[data-model-name="'+schema+'"]').binder('create', schema);
+
+	});
+});
+
+
 $.binder.prepare = function (path, value, format, model, schema) { }
 
 $.binder._prepare = function (path, value, format, model, schema) {
