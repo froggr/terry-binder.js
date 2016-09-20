@@ -6,9 +6,27 @@
   <title>The TERRY Binder</title>
   <meta name="description" content="a jQuery databinder">
   <meta name="author" content="froggr">
-	<link rel="stylesheet" href="./assets/css/bootstrap.min.css">
+	<link id="bootstyle" rel="stylesheet" href="./assets/css/bootstrap.min.css">
 
-<style>
+	<style>
+
+.jumbotron { margin-bottom: 40px; background: black; }
+.jumbotron small { color: white; }
+.terrylogo {display:block; margin: -96px auto;}
+.page-header { background-color: red; font-size: 30px; font-weight: bold; text-align:center; padding:30px;}
+blockquote { color: #fff; background: green;}
+.text-warning{color: yellow; font-weight: bold;}
+.text-danger{color: red; font-weight: bold;}
+.text-info {color: darkblue; font-weight: bold;}
+.affix { top: 30px; width: inherit; padding-right: 25px; }
+.picofterry{ height: 200px; margin: 0 auto; display: block; }
+pre {white-space : pre-line;}
+pre#jsondump {white-space : pre;}
+
+	</style>
+
+
+<style id="terrystyle">
 body { visibility: hidden; background: black; }
 .string { color: green; }
 .number { color: darkorange; }
@@ -18,18 +36,12 @@ body { visibility: hidden; background: black; }
 .highlight pre {white-space: pre;}
 .bs-example{background: #bbbbbb;	color: #000000;	padding: 30px;}
 .jumbotron h1{	font-size: 35px;	text-transform: none;	-webkit-animation:rainbow 1s infinite;	-ms-animation:rainbow 1s infinite;	-o-animation:rainbow 1s infinite;	animation:rainbow 1s infinite;}
-.jumbotron { margin-bottom: 40px; background: black; }
 .rainbow, strong {	-webkit-animation:rainbow 1s infinite;	-ms-animation:rainbow 1s infinite;	-o-animation:rainbow 1s infinite;	animation:rainbow 1s infinite; }
-.terrylogo {display:block; margin: -96px auto;}
-.page-header { background-color: red; font-size: 30px; font-weight: bold; text-align:center; padding:30px;}
 input.form-control, select.form-control{ background: white; color: black; min-height: 25px; }
 figure { color: yellow;background: teal; padding: 20px;	margin-bottom: 20px;}
 div#editohya {	background-color: white; padding:15px; height: 50px; width:100%;color:black;margin-bottom:15px; }
-.picofterry{ height: 200px; margin: 0 auto; display: block; }
-.affix { top: 30px; width: inherit; padding-right: 25px; }
 hr, section { border-top: 2px solid #ffffff; }
 section { padding: 20px 0; }
-blockquote { color: #fff; background: green; }
 [selected] {background-color: black; color: grey;}
 ol>li { list-style-type: decimal; padding-bottom: 10px;}
 @-webkit-keyframes rainbow {
@@ -194,9 +206,9 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
 					  <li>If you want to have Terry bind the model when the page loads, just add <code>data-bind-on-load</code> as an attribute somewhere in the page, say in the <code>body</code>?</li>
 					  <li>So you'll end up with something like this:<br>
 					  <pre>&lt;<span class="pl-ent">div</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>container<span class="pl-pds">"</span></span> <span class="rainbow">data-model-name</span>="muppetBabies"&gt;
-	 &lt;<span class="pl-ent">input</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span> <span class="pl-e rainbow">data-model</span>="coolness_level"</span> /&gt;
-	 &lt;<span class="pl-ent">div</span> <span class="pl-e rainbow">data-model</span>="muppet_name"</span>&gt;&lt;/<span class="pl-ent">div</span>&gt;
-&lt;/<span class="pl-ent">div</span>&gt;</pre></li>
+							&emsp;&emsp; &lt;<span class="pl-ent">input</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text<span class="pl-pds">"</span></span> <span class="pl-e rainbow">data-model</span>="coolness_level"</span> /&gt;
+							&emsp;&emsp; &lt;<span class="pl-ent">div</span> <span class="pl-e rainbow">data-model</span>="muppet_name"</span>&gt;&lt;/<span class="pl-ent">div</span>&gt;
+						&lt;/<span class="pl-ent">div</span>&gt;</pre></li>
 					  <li>If you DON'T want to have Terry bind the model when the page loads, don't include <code>data-bind-on-load</code> and instead use:</li>
 					  <ul>
 						  <li><code>$.fn.binder('create');</code> to bind all elements with models defined through <code>data-mode-name</code></li>
@@ -207,49 +219,226 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
 					  </ul>
 				  </ol>
 				  </p>
+				  <hr><br><br>
 				  <blockquote>TO BIND USE -> $.fn.binder('<span class="text-warning">ACTION</span>,'<span class="text-danger">MODEL_NAME</span>',<span class="text-info">DATA</span>)</blockquote>
 				  <h4>So lets break this down</h4>
-					 <div class="alert alert-warning"><span class="text-info">$.fn</span>.binder('ACTION','MODEL_NAME',DATA);</div>
-					  <ul>
-						  <li>You can either not reference an element (ie leave it as shown above)</li>
-						  <li>or reference an element that has the <code>data-model-name-attribute</code> ie <code>$('#someelement').binder......</code></li>
-						  <li>The first way would either look for instances of <code>[data-model-name]</code> within the page and start model binding for all of them, or relay on the <span class="text-danger">'MODEL_NAME'</span> to find it.</li>
-					  </ul>
-					  <div class="alert alert-warning">$.fn.binder(<span class="text-info">'ACTION'</span>,'MODEL_NAME','DATA');</div>
-					  <h4>This is the action that you want the <strong>Terry Binder</strong> to perform. This is a <strong>STRING</strong> and available actions inclue:</h4>
-					  <ul>
-						  <li><span class="text-danger">create</span> - This action is used to creating the binding between model and html elements</li>
-						  <li><span class="text-danger">model</span> - This action tells the binder to return the model data for use in Javascript. This is the DEFAULT value.</li>
-						  <li><span class="text-danger">refresh</span> - If the model has been modified externally, this action will refresh the data in the HTML</li>
-						  <li><span class="text-danger">update</span> - This action allows you to pass data to the binder to update the model manually</li>
-						  <li><span class="text-danger">destroy</span> - This action destroys the data binding for a particular model</li>
-					  </ul>
-					  <div class="alert alert-warning">$.fn.binder('ACTION',<span class="text-info">'MODEL_NAME'</span>,'DATA');</div>
-					  <h4>This is an OPTIONAL STRING that tell the binder what to name the model, and what <code>data-model-name</code> attribute to use.</h4> 
+				  <div class="alert alert-warning"><span class="text-info">$.fn</span>.binder('ACTION','MODEL_NAME',DATA);</div>
+				  <ul>
+					  <li>You can either not reference an element (ie leave it as shown above)</li>
+					  <li>or reference an element that has the <code>data-model-name-attribute</code> ie <code>$('#someelement').binder......</code></li>
+					  <li>The first way would either look for instances of <code>[data-model-name]</code> within the page and start model binding for all of them, or relay on the <span class="text-danger">'MODEL_NAME'</span> to find it.</li>
+				  </ul>
+				  <div class="alert alert-warning">$.fn.binder(<span class="text-info">'ACTION'</span>,'MODEL_NAME','DATA');</div>
+				  <h4>This is the action that you want the <strong>Terry Binder</strong> to perform. This is a <strong>STRING</strong> and available actions inclue:</h4>
+				  <ul>
+					  <li><span class="text-danger">create</span> - This action is used to creating the binding between model and html elements</li>
+					  <li><span class="text-danger">model</span> - This action tells the binder to return the model data for use in Javascript. This is the DEFAULT value.</li>
+					  <li><span class="text-danger">refresh</span> - If the model has been modified externally, this action will refresh the data in the HTML</li>
+					  <li><span class="text-danger">update</span> - This action allows you to pass data to the binder to update the model manually</li>
+					  <li><span class="text-danger">destroy</span> - This action destroys the data binding for a particular model</li>
+				  </ul>
+				  <div class="alert alert-warning">$.fn.binder('ACTION',<span class="text-info">'MODEL_NAME'</span>,'DATA');</div>
+				  <h4>This is an OPTIONAL STRING that tell the binders what to name the model, and what <code>data-model-name</code> attribute to use.</h4>
+				  <div class="alert alert-warning">$.fn.binder('ACTION','MODEL_NAME',<span class="text-info">'DATA'</span>);</div>
+				  <h4>This is a data OBJECT to fill the model. This is OPTIONAL. See the <a href="#binding"><em>Model Binding</em></a> section below to learn more.</h4> 
+
 			  </section>
 			  <section id="binding">
 				  <div class="page-header">Model Binding!</div>
-						<h4>To start, you need to define you model. Models are in the form of a JSON object and can be nested but at this point Terry has had a few too many so keep the data structure simple. We can get more complex once he sobers up.</h4>
-						<h4>So lets say we have this model:</h4>
-						 <pre>var obj = { 
-	'property1' : 123,
-	'property2' : 'Terry is da bomb',
-	'property300' : 'oh yeah boom'
-	}</pre>
-						<h4>And we want to bind it to this form:</h4>
-						<pre>&lt;form data-model-name=&quot;someModel&quot; id=&quot;someform&quot;&gt;
-    &lt;input type=&quot;text&quot; data-model=&quot;property1&quot;&gt;
-    &lt;input type=&quot;number&quot; data-model=&quot;property2&quot;&gt;
-    &lt;input type=&quot;text&quot; data-model=&quot;property3&quot;&gt;
-&lt;/form&gt;</pre>
-						<h4>To bind, we have a couple options! First would be to call binder on the jQuery form element like this:
-							<pre class="text-danger">$('#someform').binder('create');</pre>
-						<h4>Through the <code>data-model-name</code>, binder will know the object to be used to build the model.</h4>
-						<h4>Binder will return the model to you when you call:</h4>
-						<pre>$('#someform').binder('model');
+				  <h4>To start, you need to define your model. Models are JSON objects and can have nested properties. At this point Terry has had a few too many so keep the data structure simple. We can get more complex once he sobers up.</h4>
+				  <h4>So lets say we have this object:</h4>
+				  <pre>var obj = { 
+					&emsp;&emsp;'property1' : 123,
+					&emsp;&emsp;'property2' : 'Terry is da bomb',
+					&emsp;&emsp;'property300' : 'oh yeah boom'
+					}</pre>
+				  <h4>And we want to bind it to this form:</h4>
+				  <pre>&lt;form data-model-name=&quot;someModel&quot; id=&quot;someform&quot;&gt;
+					&emsp;&emsp; &lt;input type=&quot;text&quot; data-model=&quot;property1&quot;&gt;
+					&emsp;&emsp; &lt;input type=&quot;number&quot; data-model=&quot;property2&quot;&gt;
+					&emsp;&emsp; &lt;input type=&quot;text&quot; data-model=&quot;property3&quot;&gt;
+					&lt;/form&gt;</pre>
+				  <h4>To bind, we have a couple options! First would be a binder <strong>create</strong> on the jQuery form element like this:</h4>
+					  <pre class="text-danger">$.fn.binder('create','someModel',obj);</pre>
+					  <h4>Through the <code>data-model-name</code>, binder will know the object to be used to build the model.</h4>
+					  <h4>Binder will return the model to you when you call:</h4>
+					  <pre>$('#someform').binder('model');
+						&emsp;//eg. var somevariable = $('#someform').binder('model');
 
-//eg. var somevariable = $('#someform').binder('model');</pre>
+						&emsp;//or you can use
+						$.fn.binder('model','someModel');
+					  </pre>
+					  <h4>Both of the above will return the exact same thing.</h4>
+					  <h4>If your object has the same name as the <code>data-model-attribute</code> and is in scope of binder, then binder will detect the model automatically when initiated. You can also define the binder model manually:</h4>
+					  <pre>$.binder.model.someModel = {
+						&emsp;&emsp;attribute1 : "I am a value",
+						&emsp;&emsp;attribute2 : "Yet another value",
+						&emsp;&emsp;attribute3 : 123321
+						}
+
+						$.fn.binder('create');
+					  </pre><br><br>
 						
+				  </section>
+					<section id="validation">
+						<div class="page-header">Model Validation and Templates</div>
+						<p><strong>Coming Soon...</strong></p>
+
+
+				  </section>
+				  <section id="events">
+					  <div class="page-header">Events</div>
+
+					  <h3>Model Create</h3>
+					  <p>This event occurs as soon as a model is bound by the binder</p>
+					  <pre>$('#form').on('model-create', function(e, model) { 
+							&emsp;&emsp;// Is triggered after $.fn.binder('create')
+						});</pre>
+
+					  <h3>Model Update</h3>
+						<p>This fires on all manual model updates</p>
+						<pre>
+						$('#form').on('model-update', function(e, model, path) {
+							 // Is triggered after is the model updated - eg $.fn.binder('update')
+						});
+						</pre>
+					  <h3>Model Change</h3>
+						<p>This event firest every time a model is changed through an html element</p>
+						<pre>
+						$('#form').on('model-change', function(e, path, value, model, name, element) {
+							 // DO SOMETHING!!!!
+						});
+						</pre>
+					  <h3>Model Destroy</h3>
+						<p>After the bindings have been removed, this model fires.</p>
+						<pre>
+						$('#form').on('model-destroy', function(e) {
+							 // Is triggered when is destroyed binding
+						});
+						</pre>
+					  <h3>Model Default</h3>
+						<p>Fires when resetting a model back to its default state.</p>
+						<pre>
+						$('#form').on('model-default', function(e, model) {
+							 // set to the default model
+						});
+						</pre>
+					  <h3>Model Validation</h3>
+						<p>This will fire when a model that is set to validate fails</p>
+						<pre>
+
+						$('#form').on('model-validate', function(e, errorlist) {
+							 errorlist[0].path;
+							 errorlist[0].value;
+							 errorlist[0].element;
+						});
+
+						// OR
+
+						$('#form').on('validate', function(e, errorlist) {
+							 errorlist[0].path;
+							 errorlist[0].value;
+							 errorlist[0].element;
+						});
+						</pre>
+
+
+
+			  </section>
+				<section id="helpers">
+					<div class="page-header">Helpers</div>
+					<p><strong>coming soon</strong></p>
+				</section>
+
+		  </div><!-- end col-sm-8 DOCS -->
+		  <div class="col-sm-3" id="docsnav">
+			  <div class="list-group" data-spy="affix" data-offset-top="950">
+				  <a class="list-group-item "href="#docs">Intro</a>
+				  <a class="list-group-item" href="#basics">The Basics</a>
+				  <a class="list-group-item" href="#binding">Model Binding</a>
+				  <a class="list-group-item" href="#validation">Validation/Templates</a>
+				  <a class="list-group-item" href="#events">Events</a>
+				  <a class="list-group-item" href="#helpers">Helpers</a>
+				  <a class="list-group-item disabled"></a>
+				  <a href="#" class="list-group-item" onclick="swapStyleSheet()">Un-Terry-fy These Docs</a>
+			  </div>
+		  </div>
+	  </div>
+  </div>
+
+<script   src="https://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script>
+<script src="./terry-binder.js"></script>
+<script src="./assets/js/bootstrap.min.js"></script>
+
+<script>
+
+/*$.binder.model["obj"] = {
+				property : 'test',
+				somearray: ["chips", "candy", "pop"],
+				gender: 'male', 
+				select: '2'
+			};*/
+
+$.binder.model["second"] = { title : 'oh yeah!' };
+
+ $.binder.model.obj = {
+				property : 'test',
+				somearray: ["chips", "candy", "pop"],
+				gender: 'male', 
+				select: '2'
+			};
+
+$('#container').binder('create');
+//$.fn.binder('create');
+
+$('#container').on('model-update', function(e, model, path) {
+	var str = JSON.stringify(model, undefined, 4)
+	var cold = syntaxHighlight(str);
+    $('#jsondump').html(cold);
+});
+
+$.binder.format = function(path, value, format, model, name) {
+			if ((value instanceof Array)&&(format == 'arrayjoin')){
+					console.log(format);
+					return value.join(', ');
+			}
+			return value;
+};
+
+function syntaxHighlight(json) {
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
+}
+
+	$('#jsondump').html(syntaxHighlight(JSON.stringify($.binder.model.obj, undefined, 4)));
+    
+
+//var test = $('#container').bindings('model');
+_386 = { onePass: true, speedFactor: 1.25 };
+
+
+
+function swapStyleSheet(){
+		$('#bootstyle').attr('href', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css');
+		$('#terrystyle').remove();
+}
+
+
+/*
 
 <blockquote>
 <p>Create bindings.</p>
@@ -515,161 +704,8 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
     <span class="pl-smi">el</span>.<span class="pl-en">toggleClass</span>(<span class="pl-s"><span class="pl-pds">'</span>error<span class="pl-pds">'</span></span>, isValid);
 };</pre></div>
 
-<h2><a id="user-content-events" class="anchor" href="#events" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Events</h2>
+*/
 
-<div class="highlight highlight-source-js"><pre><span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-create<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">model</span>) {
-    <span class="pl-c">// Is triggered after $().bindings('create')</span>
-});
-
-<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-update<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">model</span>, <span class="pl-smi">path</span>) {
-    <span class="pl-c">// Is triggered after is the model updated</span>
-});
-
-<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-change<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">path</span>, <span class="pl-smi">value</span>, <span class="pl-smi">model</span>, <span class="pl-smi">name</span>, <span class="pl-smi">element</span>) {
-    <span class="pl-c">// Is triggered when is changed a value in the model through HTML element</span>
-});
-
-<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-destroy<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>) {
-    <span class="pl-c">// Is triggered when is destroyed binding</span>
-});
-
-<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-default<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">model</span>) {
-    <span class="pl-c">// set to the default model</span>
-});
-
-<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-validate<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">errorlist</span>) {
-    errorlist[<span class="pl-c1">0</span>].<span class="pl-smi">path</span>;
-    errorlist[<span class="pl-c1">0</span>].<span class="pl-c1">value</span>;
-    errorlist[<span class="pl-c1">0</span>].<span class="pl-smi">element</span>;
-});
-
-<span class="pl-c">// OR</span>
-
-<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>validate<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">errorlist</span>) {
-    errorlist[<span class="pl-c1">0</span>].<span class="pl-smi">path</span>;
-    errorlist[<span class="pl-c1">0</span>].<span class="pl-c1">value</span>;
-    errorlist[<span class="pl-c1">0</span>].<span class="pl-smi">element</span>;
-});
-
-<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-send-begin<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">url</span>, <span class="pl-smi">model</span>) {
-    <span class="pl-c">// begin sending</span>
-});
-
-<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-send-end<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">url</span>, <span class="pl-smi">model</span>) {
-    <span class="pl-c">// end sending</span>
-    <span class="pl-c">// IMPORTANT: always is executed</span>
-});
-
-<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-send-error<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">status</span>, <span class="pl-smi">url</span>, <span class="pl-smi">model</span>) {
-    <span class="pl-c">// error</span>
-});
-
-<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-send<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">data</span>, <span class="pl-smi">model</span>) {
-    <span class="pl-c">// Response data</span>
-});
-
-<span class="pl-c">// OR</span>
-
-<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>send<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">data</span>, <span class="pl-smi">model</span>) {
-    <span class="pl-c">// Response data</span>
-});
-
-<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-download-begin<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">url</span>) {
-    <span class="pl-c">// begin downloading JSON model</span>
-});
-
-<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-download-end<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">url</span>, <span class="pl-smi">data</span>) {
-    <span class="pl-c">// end downloading JSON model</span>
-    <span class="pl-c">// IMPORTANT: always is executed</span>
-});
-
-<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>model-download-error<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">status</span>, <span class="pl-smi">url</span>) {
-    <span class="pl-c">// error</span>
-});
-
-<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>template-download-begin<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">url</span>) {
-    <span class="pl-c">// begin downloading template</span>
-});
-
-<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#form<span class="pl-pds">'</span></span>).<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">'</span>template-download-end<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">e</span>, <span class="pl-smi">url</span>, <span class="pl-smi">data</span>) {
-    <span class="pl-c">// end downloading template</span>
-});</pre></div>
-			  </section>
-
-
-		  </div><!-- end col-sm-8 DOCS -->
-		  <div class="col-sm-3" id="docsnav">
-			  <ul class="nav nav-tabs nav-stacked" data-spy="affix" data-offset-top="950">
-				  <li><a href="#docs">Intro</a></li>
-				  <li><a href="#basics">The Basics</a></li>
-			  </ul>
-		  </div>
-	  </div>
-  </div>
-
-<script   src="https://code.jquery.com/jquery-1.12.4.min.js"   integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="   crossorigin="anonymous"></script>
-<script src="./terry-binder.js"></script>
-<script src="./assets/js/bootstrap.min.js"></script>
-
-<script>
-
-/*$.binder.model["obj"] = {
-				property : 'test',
-				somearray: ["chips", "candy", "pop"],
-				gender: 'male', 
-				select: '2'
-			};*/
-
-$.binder.model["second"] = { title : 'oh yeah!' };
-
- $.binder.model.obj = {
-				property : 'test',
-				somearray: ["chips", "candy", "pop"],
-				gender: 'male', 
-				select: '2'
-			};
-
-$('#container').binder('create');
-//$.fn.binder('create');
-
-$('#container').on('model-update', function(e, model, path) {
-	var str = JSON.stringify(model, undefined, 4)
-	var cold = syntaxHighlight(str);
-    $('#jsondump').html(cold);
-});
-
-$.binder.format = function(path, value, format, model, name) {
-			if ((value instanceof Array)&&(format == 'arrayjoin')){
-					console.log(format);
-					return value.join(', ');
-			}
-			return value;
-};
-
-function syntaxHighlight(json) {
-    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-        var cls = 'number';
-        if (/^"/.test(match)) {
-            if (/:$/.test(match)) {
-                cls = 'key';
-            } else {
-                cls = 'string';
-            }
-        } else if (/true|false/.test(match)) {
-            cls = 'boolean';
-        } else if (/null/.test(match)) {
-            cls = 'null';
-        }
-        return '<span class="' + cls + '">' + match + '</span>';
-    });
-}
-
-	$('#jsondump').html(syntaxHighlight(JSON.stringify($.binder.model.obj, undefined, 4)));
-    
-
-//var test = $('#container').bindings('model');
-_386 = { onePass: true, speedFactor: 1.25 };
 
 </script>
 
