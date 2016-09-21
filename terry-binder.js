@@ -12,7 +12,7 @@ $.binder = {'scope':{}};
 $.fn.binder = function (type, schema, object) {
     var self = this;
 
-	if(this.selector == ""){
+	if(this.selector == "" && this.attr('data-model-name') == undefined){
 		var models = $('[data-model-name]');
 		$('[data-model-name]').each(function(i){ 
 			var schema = $(this).attr('data-model-name');

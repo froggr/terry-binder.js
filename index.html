@@ -388,7 +388,7 @@ $.binder.scope.second = {model:{ title : 'oh yeah!' }};
 				select: '2'
 			}};
 
-$('#container').binder('create');
+$.fn.binder('create');
 //$.fn.binder('create');
 
 $('#container').on('model-update', function(e, model, path) {
