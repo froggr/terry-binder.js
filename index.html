@@ -22,17 +22,18 @@ blockquote { color: #fff; background: green;}
 .picofterry{ height: 200px; margin: 0 auto; display: block; }
 pre {white-space : pre-line;}
 pre#jsondump {white-space : pre;}
+hr {margin-top: 90px;}
+.string { color: green; }
+.number { color: darkorange; }
+.boolean { color: blue; }
+.null { color: magenta; }
+.key { color: red; }
 
 	</style>
 
 
 <style id="terrystyle">
 body { visibility: hidden; background: black; }
-.string { color: green; }
-.number { color: darkorange; }
-.boolean { color: blue; }
-.null { color: magenta; }
-.key { color: red; }
 .highlight pre {white-space: pre;}
 .bs-example{background: #bbbbbb;	color: #000000;	padding: 30px;}
 .jumbotron h1{	font-size: 35px;	text-transform: none;	-webkit-animation:rainbow 1s infinite;	-ms-animation:rainbow 1s infinite;	-o-animation:rainbow 1s infinite;	animation:rainbow 1s infinite;}
@@ -107,7 +108,7 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
   <div class="container" >
 	  <div class="jumbotron"><img src="./assets/img/terry.gif" class="terrylogo"/><small>a simple jQuery data binder. Originally forked from <em>petersirka/jquery.bindings</em></small>
 	  </div>
-	  <div id="container" data-model-name="obj" data-bind-on-loa data-model-autosave>
+	  <div id="container" data-model-name="obj" data-bind-on-load data-model-autosave>
 		  <p>Just write some stuff in this super ghetto-oldschool-retro form i got her and see it be bound!</p>
 		  <hr>
 		  <div class="row">
@@ -302,14 +303,47 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
 							 // Is triggered after is the model updated - eg $.fn.binder('update')
 						});
 						</pre>
-					  <h3>Model Change</h3>
+						<hr>
+					 	<blockquote><h4>Model Change</h4></blockquote>
 						<p>This event firest every time a model is changed through an html element</p>
 						<pre>
 						$('#form').on('model-change', function(e, path, value, model, name, element) {
 							 // DO SOMETHING!!!!
 						});
 						</pre>
-					  <h3>Model Destroy</h3>
+						<hr>
+						<blockquote><h4>Autosave</h4></blockquote>
+						<p class="lead">Make a change to this form:</p>
+	  					<div id="autosave-test" data-model-name="something" data-bind-on-load data-model-autosave style="border: solid 1px grey; border-radius:4px; padding:15px;">	
+						<div class="form-group">
+								<label>First Input</label>
+								<input type="text" data-model="first_input" class="form-control">
+							</div>
+							<div class="form-group">
+								<label>Second Input</label>
+								<input type="text" data-model="second_input" class="form-control">
+							</div>
+							<p>Bound to first input: <span data-model="first_input"></span></p>
+							<p>Bound to second input: <span data-model="second_input"></span></p>
+	  					</div>
+						<div id="autosave-notify"></div>
+						<p>Below is the example used in this page. Autosave had two events: <code>autosave-delay</code> and <code>autosave</code>.
+							The autosave delay event is used to let you know that a save is pending. If three seconds passes with no changes to the model
+                     the autosave event fires.</p>
+						<pre>
+						/*autosave-delay event: this event passes the name of the model (string)*/
+						 $('[data-model-name=&quot;something&quot;]').on('autosave-delay',function(e, modelname){
+						 &emsp;&emsp;$('#autosave-notify').html('&lt;div class=&quot;alert alert-info&quot;&gt;Preparing to save...&lt;/div&gt;');
+						 });
+ 
+						/*autosave event : this event passes the model data that was changed (JSON), the name of the model (string), and the entire model (JSON)*/
+ 						$('[data-model-name=&quot;something&quot;]').on('autosave',function(e,updateddata,modelname,model){
+						 &emsp;&emsp;$('#autosave-notify').html('&lt;div class=&quot;alert alert-success&quot;&gt;Saved:'+JSON.stringify(updateddata)+' &lt;/div&gt;');
+						 });
+
+						</pre>
+						<hr>
+					  <blockquote><h4>Model Destroy</h4></blockquote>
 						<p>After the bindings have been removed, this model fires.</p>
 						<pre>
 						$('#form').on('model-destroy', function(e) {
@@ -372,14 +406,8 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
 
 <script>
 
-/*$.binder.model["obj"] = {
-				property : 'test',
-				somearray: ["chips", "candy", "pop"],
-				gender: 'male', 
-				select: '2'
-			};*/
 
-$.binder.scope.second = {model:{ title : 'oh yeah!' }};
+$.binder.scope.something = {model:{ first_input : 'oh yeah!', second_input : 'can you dig it?' }};
 
  $.binder.scope.obj = {model : {
 				property : 'test',
@@ -388,7 +416,6 @@ $.binder.scope.second = {model:{ title : 'oh yeah!' }};
 				select: '2'
 			}};
 
-$.fn.binder('create');
 //$.fn.binder('create');
 
 $('#container').on('model-update', function(e, model, path) {
@@ -396,6 +423,18 @@ $('#container').on('model-update', function(e, model, path) {
 	var cold = syntaxHighlight(str);
     $('#jsondump').html(cold);
 });
+
+
+$('[data-model-name="something"]').on('autosave-delay',function(){
+	$('#autosave-notify').html('<div class="alert alert-info">Preparing to save...</div>');
+});
+
+
+$('[data-model-name="something"]').on('autosave',function(e,data,modelname,model){
+	$('#autosave-notify').html('<div class="alert alert-success">Saved:'+syntaxHighlight(JSON.stringify(data, undefined, 2))+' </div>');
+});
+
+
 
 $.binder.format = function(path, value, format, model, name) {
 			if ((value instanceof Array)&&(format == 'arrayjoin')){

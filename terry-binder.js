@@ -126,7 +126,11 @@ function binder_create(scope, template) {
     self.data('default', $.extend(true, {}, scope.model));
     self.data('model', scope.model);
     
-    self.on('input paste cut change', 'input[data-model],textarea[data-model],select[data-model], div[data-model][contenteditable="true"]', function (e) {
+    self.on('input paste cut', 'input[data-model],textarea[data-model], div[data-model][contenteditable="true"]', function (e) {
+        binder_internal_change.call(this, e, self, self.data('model'), schema, scope);
+    });
+ 
+    self.on('change', 'input[data-model][type="radio"],input[data-model][type="checkbox"],select[data-model]', function (e) {
         binder_internal_change.call(this, e, self, self.data('model'), schema, scope);
     });
 
@@ -195,7 +199,6 @@ function binder_destroy() {
     self.removeData('default');
     self.removeData('isChange');
     self.find('input[data-model],textarea[data-model],select[data-model],div[data-model]').unbind();
-    console.log(self);
 	 self.unbind();
     self.trigger('model-destroy', [schema]);
     return self;
@@ -440,7 +443,7 @@ $(document).ready(function(){
 				return;
 			/* Here you should check the model exists */
 			
-    		if (typeof ($.binder.model[schema]) === 'undefined')
+    		if (typeof ($.binder.scope[schema]) === 'undefined')
 				binder_build_model(schema);		
 			
 			$('[data-model-name="'+schema+'"]').binder('create', schema);
@@ -620,8 +623,7 @@ function binder_delay(fn) {
 }
 
 function binder_build_model(schema){
-	$.binder.model[schema] = {};
-	$('[data-model-name="obj"]').find('[data-model]').each(function(){console.log(1);});
+	$.binder.scope[schema] = {model:{}};
    $('[data-model-name="'+schema+'"]').find("[data-model]").each(function(){
         var key = $(this).attr("data-model");
         $.binder.scope[schema].model[key] = "";        
