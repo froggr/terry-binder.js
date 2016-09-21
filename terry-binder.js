@@ -9,6 +9,7 @@
 *   - for blank model, create 'schema' based on [data-model] within self
 *
 ******************************************************************************/
+console.info('This is Terry. What up. Just so you know, I am in the early staged of wripping this script to pieces. So I\'ll be dropping crap to the console LEFT AND RIGHT. If you don\'t like it, go %&!$ a *%#&!');
 var terrybinder_cache = {};
 $.binder = {'model' : {}};
 
@@ -30,12 +31,16 @@ $.fn.binder = function (type, schema, object) {
 		});
 		return;
 	}
+	else if((this.attr('data-model-name') == undefined) && (schema == undefined))
+		return console.error('ARGH! Terry is PISSED! The binder has been shut off cuz of yer err\'!\nYou have passed a jQuery element that doesn\'t have a model name attached to it!  Either initiate Terry Binder globally with $.fn.binder or reference an element with the [data-model-name] attribute present!\nIf you need help, check out the docs (http://froggr.github.io/terry-binder.js) even tho they kinda suck!');
+	else
+   	var schema = self.attr('data-model-name');
+
+
 
    if (typeof (type) === 'undefined')
         type = 'model';
 	
-	if(schema == undefined)
-   	var schema = self.attr('data-model-name');
 
 
 
@@ -189,7 +194,9 @@ function binder_destroy() {
     self.removeData('model');
     self.removeData('default');
     self.removeData('isChange');
-    self.find('input[data-model],textarea[data-model],select[data-model],div[data-model]').unbind('change');
+    self.find('input[data-model],textarea[data-model],select[data-model],div[data-model]').unbind();
+    console.log(self);
+	 self.unbind();
     self.trigger('model-destroy', [schema]);
     return self;
 }
