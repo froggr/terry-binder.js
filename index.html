@@ -107,7 +107,7 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
   <div class="container" >
 	  <div class="jumbotron"><img src="./assets/img/terry.gif" class="terrylogo"/><small>a simple jQuery data binder. Originally forked from <em>petersirka/jquery.bindings</em></small>
 	  </div>
-	  <div id="container" data-model-name="obj" data-bind-on-loa>
+	  <div id="container" data-model-name="obj" data-bind-on-loa data-model-autosave>
 		  <p>Just write some stuff in this super ghetto-oldschool-retro form i got her and see it be bound!</p>
 		  <hr>
 		  <div class="row">
@@ -379,14 +379,14 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
 				select: '2'
 			};*/
 
-$.binder.model["second"] = { title : 'oh yeah!' };
+$.binder.scope.second = {model:{ title : 'oh yeah!' }};
 
- $.binder.model.obj = {
+ $.binder.scope.obj = {model : {
 				property : 'test',
 				somearray: ["chips", "candy", "pop"],
 				gender: 'male', 
 				select: '2'
-			};
+			}};
 
 $('#container').binder('create');
 //$.fn.binder('create');
@@ -423,7 +423,7 @@ function syntaxHighlight(json) {
     });
 }
 
-	$('#jsondump').html(syntaxHighlight(JSON.stringify($.binder.model.obj, undefined, 4)));
+	$('#jsondump').html(syntaxHighlight(JSON.stringify($.binder.scope.obj.model, undefined, 4)));
     
 
 

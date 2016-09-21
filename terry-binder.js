@@ -3,15 +3,11 @@
 * froggr - 2016
 * 
 * TODO: 
-*   - define models in binder function?
-	 - define what path and schema actually do. where does it actually bind back to original object?
-*   - if no jQuery element, find all [data-model-name]s and initialize bind
-*   - for blank model, create 'schema' based on [data-model] within self
-*
+*	- record the element where all models are bound and check on that to unbind!
 ******************************************************************************/
 console.info('This is Terry. What up. Just so you know, I am in the early staged of wripping this script to pieces. So I\'ll be dropping crap to the console LEFT AND RIGHT. If you don\'t like it, go %&!$ a *%#&!');
 var terrybinder_cache = {};
-$.binder = {'model' : {}};
+$.binder = {'scope':{}};
 
 $.fn.binder = function (type, schema, object) {
     var self = this;
@@ -23,7 +19,7 @@ $.fn.binder = function (type, schema, object) {
 			
 			/* Here you should check the model exists */
 			
-			if (typeof ($.binder.model[schema]) == 'undefined'){
+			if (typeof ($.binder.scope[schema].model) == 'undefined'){
 				binder_build_model(schema);		
 			}
 			
@@ -36,6 +32,7 @@ $.fn.binder = function (type, schema, object) {
 	else
    	var schema = self.attr('data-model-name');
 
+	$.binder.scope[schema].schema = schema;
 
 
    if (typeof (type) === 'undefined')
@@ -44,19 +41,18 @@ $.fn.binder = function (type, schema, object) {
 
 
 
-	if (typeof ($.binder.model[schema]) === 'undefined'){
+	if (typeof ($.binder.scope[schema].model) === 'undefined'){
 			console.error(schema);	
 			binder_build_model(schema);		
 	}
 	
 	if (typeof(object) == 'object'){
-		$.binder.model[schema] = object;				
+		$.binder.scope[schema].model = object;				
 	}
-	
-	var model = $.binder.model[schema];
+	var scope = $.binder.scope[schema];
     switch (type) {
         case 'create':
-            return binder_create.call(self, model, template = undefined, schema); 
+            return binder_create.call(self, scope, template = undefined); 
         case 'change':
             return (function (value) { if (typeof (value) !== 'boolean') return self.data('isChange') || false; return self.data('isChange', value); });
         case 'refresh':
@@ -78,33 +74,36 @@ $.fn.binder = function (type, schema, object) {
         case 'update':
             return (function (model) { return binder_create.call(self, model, schema); });
         case 'model':
-            return binder_create.call(self, null, null, schema);
+            return scope.model;
     }
     return self;
 };
 
-function binder_create(model, template, schema) {
+function binder_create(scope, template) {
     var self = this;
-
-    if (typeof (model) === 'undefined' || model === null)
+	 model = scope.model;
+	 schema = scope.schema;	
+	 scope.load_time = new Date();
+	
+    if (typeof (scope.model) === 'undefined' || scope.model === null)
 	    return $.extend({}, self.data('model'));
 
-	 console.log(model);
+	 console.log(scope.model);
     var tmp = self.data('model');
 
     self.data('isChange', false);
 
     if (typeof (tmp) !== 'undefined') {
-        if (typeof (model) === 'function') {
-            tmp = model(tmp);
+        if (typeof (scope.model) === 'function') {
+            tmp = scope.model(tmp);
             if (tmp)
                 self.data('model', tmp);
         }
         else
-            self.data('model', model);
+            self.data('model', scope.model);
 
         binder_refresh.call(self, schema);
-        self.trigger('model-update', [model, schema]);
+        self.trigger('model-update', [scope.model, schema]);
         return self;
     }
 
@@ -124,24 +123,24 @@ function binder_create(model, template, schema) {
             template = $(template).html();
     }
 
-    self.data('default', $.extend(true, {}, model));
-    self.data('model', model);
+    self.data('default', $.extend(true, {}, scope.model));
+    self.data('model', scope.model);
     
     self.on('input paste cut change', 'input[data-model],textarea[data-model],select[data-model], div[data-model][contenteditable="true"]', function (e) {
-        binder_internal_change.call(this, e, self, self.data('model'), schema);
+        binder_internal_change.call(this, e, self, self.data('model'), schema, scope);
     });
 
 
     binder_refresh.call(self, schema);
 
     binder_delay(function() {
-        self.trigger('model-create', [model, schema]);
+        self.trigger('model-create', [scope.model, schema]);
     });
 
     return binder_rebind.call(self);
 }
 
-function binder_internal_change(e, self, model, schema) {
+function binder_internal_change(e, self, model, schema, scope) {
     var el = $(this);
     var name = el.attr('data-model');
     var type = el.attr('type');
@@ -179,10 +178,11 @@ function binder_internal_change(e, self, model, schema) {
 
     binder_rebind.call(self, schema);
     self.data('isChange', true);
-
     binder_delay(function() {
         self.trigger('model-change', [name, value_new, model, schema, el]);
         self.trigger('model-update', [model, name, schema]);
+		  if($('[data-model-name="'+schema+'"]').is('[data-model-autosave]'))
+				binder_autosave(self, scope, name, value_new, model, schema, el);
     });
 }
 
@@ -624,8 +624,51 @@ function binder_build_model(schema){
 	$('[data-model-name="obj"]').find('[data-model]').each(function(){console.log(1);});
    $('[data-model-name="'+schema+'"]').find("[data-model]").each(function(){
         var key = $(this).attr("data-model");
-        $.binder.model[schema][key] = "";        
+        $.binder.scope[schema].model[key] = "";        
     });
 }
 
+function binder_autosave(self, scope, name, value_new, model, schema, el) {
+				/* 
+				* This checks if the model is initially loading or if it has just saved, and if so blocks the autosave.
+				* Then once a save happens, a timer is fired for 3 seconds. If the user makes a change, the time is restart.
+				* a "Saving" notification is displayed to indicate to the user that a save is pending. Also, once a field
+				* is changed, angular inserts a .ng-dirty class which has been styled orange, indicating that data is unsaved.
+				* when the timer expires, data is changed to .ng-pristine and save is called. If data is changed while the
+				* save is happening, the autosave is fired again.
+				*/
+				if(scope.load_time !== undefined) {
+					var load_ms = scope.load_time.getTime();
+					var ms = new Date().getTime();
 
+					var last_autosave = 0;
+
+					if(scope.autosave !== undefined)
+						last_autosave = scope.autosave.last_save.getTime();
+
+					if(ms-load_ms < 1000 || ms-last_autosave < 10) { //lame fix to autosave firing when data is loaded
+						return;
+					}
+				} else return; //don't autosave until actually loaded..
+
+				if (scope.timer) {
+					clearTimeout(scope.timer);
+					console.log('Timeout Cleared');
+					scope.senddata[name] = value_new;	
+				}
+				if (!scope.timer) {
+					//notification({ icon: 'glyphicon glyphicon-save', title: ' <strong>Saving...</strong>' },{type: 'info', delay: 10000});
+					console.info('Saving Delay Event Fired');
+        			self.trigger('autosave-delay', [scope.schema]);
+					scope.senddata = {};
+					scope.senddata[name] = value_new;	
+				}
+				scope.timer = setTimeout(function() {
+					scope.timer = 0;
+					scope.autosave = {last_save: new Date(0)};
+			    	console.info('AutoSave Event Fired'); 
+        			self.trigger('autosave', [scope.senddata, scope.schema, scope.model]);
+					console.log(scope.senddata);
+					delete scope.senddata; 
+		    	}, 3000);
+}
