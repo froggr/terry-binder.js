@@ -46,7 +46,7 @@ $.fn.binder = function (type, schema, object) {
 			binder_build_model(schema);		
 	}
 	
-	if (typeof(object) == 'object'){
+	if (typeof(object) == 'object' && type == 'create'){
 		$.binder.scope[schema].model = object;				
 	}
 	var scope = $.binder.scope[schema];
@@ -72,7 +72,7 @@ $.fn.binder = function (type, schema, object) {
         case 'get':
             return (function (path) { return binder_get.call(self, path, schema); });
         case 'update':
-            return (function (model) { return binder_create.call(self, model, schema); });
+            return binder_create.call(self, object, schema);
         case 'model':
             return scope.model;
     }
@@ -175,6 +175,7 @@ function binder_internal_change(e, self, model, schema, scope) {
         return;
 
     binder_setvalue.call(el, model, name, value_new, schema);
+    self.trigger('model-calc', [self, scope, name, model, schema]);
 
     if (type == 'radio') {
         this.checked = value;
