@@ -16,7 +16,7 @@ $.fn.binder = function (type, schema, object) {
 
 
 	/* if a jQuery element and a model reference aren't included, check the page and bind all referenced models */
-	if(this.selector == "" && this.attr('data-model-name') == undefined){
+	if(this.selector == "" && this.attr('data-model-name') == undefined && schema == undefined){
 		var models = $('[data-model-name]');
 		$('[data-model-name]').each(function(i){ 
 			var schema = $(this).attr('data-model-name');
