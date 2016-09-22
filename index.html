@@ -436,7 +436,7 @@ $('[data-model-name="something"]').on('autosave',function(e,data,modelname,model
 $('[data-model-name="something"]').on('model-calc', function(e,self, scope, name, model, schema) {
 	console.log(model);
 	model.total = model.first_input + model.second_input;
-	binder_autosave(self, scope, 'total', model.total);
+//	binder_autosave(self, scope, 'total', model.total);
 });
 
 $.binder.format = function(path, value, format, model, name) {

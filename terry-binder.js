@@ -134,6 +134,11 @@ function binder_create(scope, template) {
         binder_internal_change.call(this, e, self, self.data('model'), schema, scope);
     });
 
+	self.on('DOMSubtreeModified', '[data-model-calc]', function (e) {
+		binder_internal_change.call(this, e, self, self.data('model'), schema, scope);
+    });
+
+
 
     binder_refresh.call(self, schema);
 
@@ -148,10 +153,17 @@ function binder_internal_change(e, self, model, schema, scope) {
     var el = $(this);
     var name = el.attr('data-model');
     var type = el.attr('type');
-	 if(el.attr('contenteditable') == 'true')
-    	var value = el.html();
-	 else
-	   var value = el.val();
+
+
+	 /* allow for different datatypes. */
+	 if (el[0].value !== undefined) {
+		   var value = el.val();
+
+	 } else {
+		   var value = el.html();
+
+	 }
+
 
     if (!(/(MSIE\ [0-8]\.\d+)/.test(navigator.userAgent)))
         e.preventDefault();
