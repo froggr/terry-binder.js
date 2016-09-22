@@ -27,28 +27,32 @@ $.fn.binder = function (type, schema, object) {
 		});
 		return;
 	}
+	else if(schema == undefined)
+   	var schema = self.attr('data-model-name');
 	else if((this.attr('data-model-name') == undefined) && (schema == undefined))
 		return console.error('ARGH! Terry is PISSED! The binder has been shut off cuz of yer err\'!\nYou have passed a jQuery element that doesn\'t have a model name attached to it!  Either initiate Terry Binder globally with $.fn.binder or reference an element with the [data-model-name] attribute present!\nIf you need help, check out the docs (http://froggr.github.io/terry-binder.js) even tho they kinda suck!');
-	else
-   	var schema = self.attr('data-model-name');
 
+	if($.binder.scope[schema] == undefined)
+		$.binder.scope[schema] = {};
+	
 	$.binder.scope[schema].schema = schema;
 
 
    if (typeof (type) === 'undefined')
-        type = 'model';
+        type = 'model'; //this sets the default command to return model. this may need to be removed.
 	
 
 
-
-	if (typeof ($.binder.scope[schema].model) === 'undefined'){
-			console.error(schema);	
-			binder_build_model(schema);		
-	}
-	
 	if (typeof(object) == 'object' && type == 'create'){
 		$.binder.scope[schema].model = object;				
 	}
+	else if (typeof ($.binder.scope[schema].model) === 'undefined'){
+			console.error(schema);	
+			binder_build_model(schema);		
+	}
+
+		
+
 	var scope = $.binder.scope[schema];
     switch (type) {
         case 'create':
