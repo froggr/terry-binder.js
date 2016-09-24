@@ -297,10 +297,12 @@ function binder_rebind_force(schema) {
         var name = el.attr('data-model');
         var custom = el.attr('data-custom');
         var value = binder_getvalue(model, name);
-
         if (typeof (custom) !== 'undefined') {
-            $.binder.custom.call(el, name, value, custom || '', model, schema);
-            return;
+				if(typeof ($.binder.custom[custom]) == 'function'){
+            	value = $.binder.custom[custom].call(el, name, value, custom || '', model, schema);
+				}
+				else
+					console.error('The custom template "' + custom + '" that you defined in model: ' + schema + ' and attribute: ' + name + ' was not defined!');
         }
 
         var attr = el.attr('data-encode');
