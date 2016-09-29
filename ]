@@ -93,10 +93,7 @@ $.fn.binder = function (type, schema, object) {
 function binder_create(scope, template) {
 	var self = this;
 	model = scope.model;
-	scope.valid = true;
-	scope.autosave = {data:{}};
 	schema = scope.schema;	
-	console.log(schema);
 	scope.load_time = new Date();
 
 	if (typeof (scope.model) === 'undefined' || scope.model === null)
@@ -141,15 +138,15 @@ function binder_create(scope, template) {
 	self.data('model', scope.model);
 
 	self.on('input paste cut', 'input[data-model],textarea[data-model], div[data-model][contenteditable="true"]', function (e) {
-		binder_internal_change.call(this, e, self, self.data('model'), scope.schema, scope);
+		binder_internal_change.call(this, e, self, self.data('model'), schema, scope);
 	});
 
 	self.on('change', 'input[data-model][type="radio"],input[data-model][type="checkbox"],select[data-model]', function (e) {
-		binder_internal_change.call(this, e, self, self.data('model'), scope.schema, scope);
+		binder_internal_change.call(this, e, self, self.data('model'), schema, scope);
 	});
 
 	self.on('DOMSubtreeModified', '[data-model-calc]', function (e) {
-		binder_internal_change.call(this, e, self, self.data('model'), scope.schema, scope);
+		binder_internal_change.call(this, e, self, self.data('model'), schema, scope);
 	});
 
 
@@ -191,27 +188,14 @@ function binder_internal_change(e, self, model, schema, scope) {
 	var prepare = el.attr('data-prepare');
 	var value_new = $.binder.prepare.call(el, name, value, prepare, model, schema);
 
-
-	/* The actual checking of autosave for the model... */
 	if (typeof (value_new) === 'undefined')
 		value_new = $.binder._prepare.call(el, name, value, prepare, model, schema);
-	console.log(schema);
+
 	var r = $.binder._validation.call(el, name, value_new, model, schema);
-
-
-	/* Watch function deals with validation errors */
 	$.binder.watch.call(el, r, name, value_new, model, schema);
 
-	if (!r){
-		/* This stops binding if validation fails! */
-		//consider dealing with autosave on validation fail here...
-		if($('[data-model-name="'+schema+'"]').is('[data-model-autosave]')){
-			scope.autosave.data[name] = 'invalid';
-			binder_autosave(self, scope, name, value_new, model, schema, el);
-		}
-
+	if (!r)
 		return;
-	}
 
 	binder_setvalue.call(el, model, name, value_new, schema);
 	self.trigger('model-calc', [self, scope, name, model, schema]);
@@ -225,10 +209,7 @@ function binder_internal_change(e, self, model, schema, scope) {
 	binder_delay(function() {
 		self.trigger('model-change', [name, value_new, model, schema, el]);
 		self.trigger('model-update', [model, name, schema]);
-
-		/* Trigger autosave for valid model */
 		if($('[data-model-name="'+schema+'"]').is('[data-model-autosave]'))
-			scope.autosave.data[name] = 'valid'; // sets autosave validation scope to valid for model attribute
 			binder_autosave(self, scope, name, value_new, model, schema, el);
 	});
 }
@@ -270,6 +251,7 @@ function binder_validate(schema) {
 		if (typeof (r) === 'undefined' || r === null || r)
 			return;
 		error.push({ path: path, value: value, element: self.find('input[data-model="' + path + '"],textarea[data-model="' + path + '"],select[data-model="' + path + '"]') });
+		console.log(error);
 	});
 
 	self.trigger('validate', [error, schema]);
@@ -536,19 +518,14 @@ $.binder.format = function (path, value, format, model, schema) {
 };
 
 $.binder.custom = function (path, value, custom, model, schema) { };
-
-/*Default binder watch will add a bootstrap error. this is easliy overwritten */
-$.binder.watch = function (isValid, path, value, model, schema) { 
-};
+$.binder.watch = function (isValid, path, value, model, schema) { };
 
 $.binder.validation = function (path, value, model, schema) {
 	return true;
 };
 
 $.binder._validation = function (path, value, model, schema) {
-	if(typeof($.binder.validation[schema]) == 'function')
-		var r = $.binder.validation[schema](path, value, model, schema);
-
+	var r = $.binder.validation(path, value, model, schema);
 	if (typeof (r) === 'undefined' || r === null)
 		r = true;
 	return r === true;
@@ -701,7 +678,7 @@ function binder_autosave(self, scope, name, value_new, model, schema, el) {
 
 		var last_autosave = 0;
 
-	if(scope.autosave.last_save !== undefined)
+	if(scope.autosave !== undefined)
 		last_autosave = scope.autosave.last_save.getTime();
 
 	if(ms-load_ms < 1000 || ms-last_autosave < 10) { //lame fix to autosave firing when data is loaded
@@ -718,27 +695,12 @@ if (!scope.timer) {
 	//notification({ icon: 'glyphicon glyphicon-save', title: ' <strong>Saving...</strong>' },{type: 'info', delay: 10000});
 	console.info('Saving Delay Event Fired');
 	self.trigger('autosave-delay', [scope.schema]);
-	if(scope.senddata == undefined)
-		scope.senddata = {};
+	scope.senddata = {};
 	scope.senddata[name] = value_new;	
 }
-
-var invalid = false;
-for(var key in scope.autosave.data){
-	if (scope.autosave.data[key] != 'valid'){ invalid = true; }
-}
-if(invalid){
-		clearTimeout(scope.timer);
-		scope.timer = 0;
-		scope.valid = false;
-		self.trigger('autosave-delay', [scope.schema, 'validation']);
-		return;
-}
-
-
 scope.timer = setTimeout(function() {
 	scope.timer = 0;
-	scope.autosave.last_save = new Date(0);
+	scope.autosave = {last_save: new Date(0)};
 	console.info('AutoSave Event Fired'); 
 	self.trigger('autosave', [scope.senddata, scope.schema, scope.model]);
 	console.log(scope.senddata);

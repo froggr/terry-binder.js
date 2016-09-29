@@ -316,11 +316,11 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
 						<p class="lead">Make a change to this form:</p>
 	  					<div id="autosave-test" data-model-name="something" data-bind-on-load data-model-autosave style="border: solid 1px grey; border-radius:4px; padding:15px;">	
 						<div class="form-group">
-								<label>First Input</label>
+								<label class="control-label">First Input</label>
 								<input type="number" data-model="first_input" class="form-control">
 							</div>
 							<div class="form-group">
-								<label>Second Input</label>
+								<label class="control-label">Second Input</label>
 								<input type="number" data-model="second_input" class="form-control">
 							</div>
 							<p>Input 1 + Input 2 = <span data-model="total" data-model-calc></span></p>
@@ -407,20 +407,20 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
 
 						//And the template:
 						&emsp;$.binder.custom.table = function(name, value, custom, model, schema){						
-						&emsp;&emsp;var tableContent = "<thead><tr>";
+						&emsp;&emsp;var tableContent = "&lt;thead&gt;&lt;tr&gt;";
 						&emsp;&emsp;$.each(value.headers, function(key,val){
-						&emsp;&emsp;&emsp;tableContent += "<th>" + val + "</th>";
+						&emsp;&emsp;&emsp;tableContent += "&lt;th&gt;" + val + "&lt;/th&gt;";
 						&emsp;&emsp;});
-						&emsp;&emsp;tableContent += "</tr></thead><tbody>";
+						&emsp;&emsp;tableContent += "&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;";
 						&emsp;&emsp;$.each(value.body,function(index,val){
-						&emsp;&emsp;&emsp;tableContent += "<tr>";
+						&emsp;&emsp;&emsp;tableContent += "&lt;tr&gt;";
 						&emsp;&emsp;&emsp;$.each(value.headers, function(i,v){
-						&emsp;&emsp;&emsp;&emsp;tableContent += "<td>" + val[i] + "</td>";
+						&emsp;&emsp;&emsp;&emsp;tableContent += "&lt;td&gt;" + val[i] + "&lt;/td&gt;";
 						&emsp;&emsp;&emsp;});		
-						&emsp;&emsp;	tableContent += "</tr>";
+						&emsp;&emsp;	tableContent += "&lt;/tr&gt;";
 
 						&emsp;&emsp;});
-						&emsp;tableContent += "</tbody>";
+						&emsp;tableContent += "&lt;/tbody&gt;";
 						&emsp;return tableContent;
 						};
 
@@ -433,6 +433,42 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
 						</table>
 					</div>
 				</section>
+				<section id="validation">
+
+					<blockquote id="templates">Validation</blockquote>
+					<p>This is used in the calculation example above. Look at the first input in that example to test </p>
+					<pre>
+					
+/* This is a simple validation rule on the 'something' model */
+$.binder.validation.something = function(path, value, model, name) {
+&emsp;	switch (path) {
+&emsp;&emsp;        case 'first_input':
+&emsp;&emsp;&emsp;              return value > 0 && value < 20;			      
+&emsp;&emsp;	}
+&emsp;	    return true;
+};
+
+/* This is a simple watch statement that adds some bootstrap classes and a validation message */
+$.binder.watch = function (isValid, path, value, model, schema) { 
+&emsp;	var el = this;
+&emsp;	var parent = $(el).parent();
+&emsp;	if(isValid == false){
+&emsp;&emsp;	   parent.addClass('has-error');		
+&emsp;&emsp;		if(parent.find('p.text-danger').length == 0){
+&emsp;&emsp;&emsp;			parent.append('&lt;p class="text-danger"&gt;Validation Error&lt;/p&gt;');
+&emsp;&emsp;		}
+&emsp;	}
+&emsp;	else{
+&emsp;&emsp;		parent.removeClass('has-error');
+&emsp;&emsp;		parent.children('p.text-danger').remove();
+&emsp;	}
+};
+
+					</pre>
+
+				</section>
+
+
 
 		  </div><!-- end col-sm-8 DOCS -->
 		  <div class="col-sm-3" id="docsnav">
@@ -496,28 +532,83 @@ $.binder.custom.table = function(name, value, custom, model, schema){
 	return tableContent;
 };
 
+/* This is a simple validation rule on the 'something' model */
+$.binder.validation.something = function(path, value, model, name) {
+	switch (path) {
+        case 'first_input':
+              return value > 0 && value < 20;			      
+	}
+	    return true;
+};
+
+/* This is a simple watch statement that adds some bootstrap classes and a validation message */
+$.binder.watch = function (isValid, path, value, model, schema) { 
+	var el = this;
+	var parent = $(el).parent();
+			console.log(parent.first('p.text-danger').length) 
+	if(isValid == false){
+	   parent.addClass('has-error');
+		
+		if(parent.find('p.text-danger').length == 0){
+			parent.append('<p class="text-danger">Validation Error</p>');
+		}
+	}
+	else{
+		parent.removeClass('has-error');
+		parent.children('p.text-danger').remove();
+	}
+};
+
+
+
+/****
+* This event fires on every model update. This one updates the obj model and displays it in the pre on the page
+****/
+
 $('#container').on('model-update', function(e, model, path) {
 	var str = JSON.stringify(model, undefined, 4)
 	var cold = syntaxHighlight(str);
     $('#jsondump').html(cold);
 });
 
+	/****
+	  * this is the autosave delay event. also handles validations errors in autosave
+	  ****/
 
-$('[data-model-name="something"]').on('autosave-delay',function(){
+$('[data-model-name="something"]').on('autosave-delay',function(e, schema, stat){
+	console.warn(stat);
+	if(stat){	
+	$('#autosave-notify').html('<div class="alert alert-danger">Validation Error!</div>');
+	}
+	else{
 	$('#autosave-notify').html('<div class="alert alert-info">Preparing to save...</div>');
+	}
 });
 
+
+/****
+* If the model is valid and autosave is active, this event fires after a 3second delay 
+****/
 
 $('[data-model-name="something"]').on('autosave',function(e,data,modelname,model){
 	$('#autosave-notify').html('<div class="alert alert-success">Saved:'+syntaxHighlight(JSON.stringify(data, undefined, 2))+' </div>');
 });
 
+
+/**** 
+  * This event happens when data-model-calc attribute is set.
+  ****/
 $('[data-model-name="something"]').on('model-calc', function(e,self, scope, name, model, schema) {
-	console.log(model);
-	model.total = model.first_input + model.second_input;
-//	binder_autosave(self, scope, 'total', model.total);
+	if(name == "total");
+		model.total = model.first_input + model.second_input;
 });
 
+
+
+/**** 
+  * This is a custom format function that allows a particular model attribute to be formatted a certain way. 
+ * In this instance, the format would be called through and attribute -> data-format="arrayjoin"
+ ****/
 $.binder.format = function(path, value, format, model, name) {
 			if ((value instanceof Array)&&(format == 'arrayjoin')){
 					return value.join(', ');
