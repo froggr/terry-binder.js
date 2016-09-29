@@ -651,8 +651,13 @@ function binder_delay(fn) {
 function binder_build_model(schema){
 	$.binder.scope[schema] = {model:{}};
 	$('[data-model-name="'+schema+'"]').find("[data-model]").each(function(){
+		var inputelement = ['INPUT','TEXTAREA','SELECT','DATALIST']
 		var key = $(this).attr("data-model");
-		$.binder.scope[schema].model[key] = "";        
+		if(inputelement.indexOf(this.tagName) > -1)
+			var attrib = $(this).val(); 
+		else
+			var attrib = $(this).html();
+		$.binder.scope[schema].model[key] = attrib;        
 	});
 }
 
