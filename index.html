@@ -380,7 +380,58 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
 			  </section>
 				<section id="helpers">
 					<div class="page-header">Helpers</div>
-					<p><strong>coming soon</strong></p>
+					<p><strong>In Progress. More coming soon</strong></p>
+					<blockquote id="templates">Custom Templating</blockquote>
+					<code>$.binder.custom.tabemplatename = function(name, value, custom, model, schema)</code>						
+					
+					<p>This allows you to use data from the model and display it in the html in any way you see fit! consider the following example:</p>
+					<pre>
+						//The model:
+						&emsp;var someTable = table: {
+						&emsp;&emsp;headers: {cell1:"Cell 1", cell2: "Cell 2", cell3:"Cell 3"},
+						&emsp;&emsp;body: [
+						&emsp;&emsp;&emsp;{cell1: "these",cell2: "cells",cell3: "are"},
+						&emsp;&emsp;&emsp;{cell1: "stored",cell2: "in",cell3: "an"},
+						&emsp;&emsp;&emsp;{cell1: "object",cell2: "wee!",cell3: "binder"},
+						&emsp;&emsp;&emsp;{cell1: "template",cell2: "displays",cell3: "them!"}
+						&emsp;&emsp;]
+						&emsp;}
+
+						//The HTML:
+						&lt;div id="someTable" data-model-name="someTable" &gt;
+						&emsp;&lt;table data-model="table" data-custom="table" class="table table-hover"&gt;
+
+
+						&emsp;&lt;/table&gt;
+						&lt;/div&gt;
+
+						//And the template:
+						&emsp;$.binder.custom.table = function(name, value, custom, model, schema){						
+						&emsp;&emsp;var tableContent = "<thead><tr>";
+						&emsp;&emsp;$.each(value.headers, function(key,val){
+						&emsp;&emsp;&emsp;tableContent += "<th>" + val + "</th>";
+						&emsp;&emsp;});
+						&emsp;&emsp;tableContent += "</tr></thead><tbody>";
+						&emsp;&emsp;$.each(value.body,function(index,val){
+						&emsp;&emsp;&emsp;tableContent += "<tr>";
+						&emsp;&emsp;&emsp;$.each(value.headers, function(i,v){
+						&emsp;&emsp;&emsp;&emsp;tableContent += "<td>" + val[i] + "</td>";
+						&emsp;&emsp;&emsp;});		
+						&emsp;&emsp;	tableContent += "</tr>";
+
+						&emsp;&emsp;});
+						&emsp;tableContent += "</tbody>";
+						&emsp;return tableContent;
+						};
+
+					</pre>
+					So the above code results in:
+					<div id="someTable" data-model-name="someTable" data-bind-on-load>
+						<table data-model="table" data-custom="table" class="table table-hover">
+
+
+						</table>
+					</div>
 				</section>
 
 		  </div><!-- end col-sm-8 DOCS -->
@@ -415,7 +466,35 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
 				select: '2'
 			}};
 
-//$.fn.binder('create');
+	$.binder.scope.someTable = {model:{
+				table: {
+					headers: {cell1:"Cell 1", cell2: "Cell 2", cell3:"Cell 3"},
+					body: [
+						{cell1: "these",cell2: "cells",cell3: "are"},
+						{cell1: "stored",cell2: "in",cell3: "an"},
+						{cell1: "object",cell2: "wee!",cell3: "binder"},
+						{cell1: "template",cell2: "displays",cell3: "them!"}
+					]
+				}
+		}};
+	
+$.binder.custom.table = function(name, value, custom, model, schema){						
+	var tableContent = "<thead><tr>";
+	$.each(value.headers, function(key,val){
+		tableContent += "<th>" + val + "</th>";
+	});
+	tableContent += "</tr></thead><tbody>";
+	$.each(value.body,function(index,val){
+		tableContent += "<tr>";
+		$.each(value.headers, function(i,v){
+			tableContent += "<td>" + val[i] + "</td>";
+		});		
+		tableContent += "</tr>";
+
+	});
+	tableContent += "</tbody>";
+	return tableContent;
+};
 
 $('#container').on('model-update', function(e, model, path) {
 	var str = JSON.stringify(model, undefined, 4)
