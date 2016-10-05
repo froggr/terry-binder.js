@@ -321,12 +321,10 @@ function binder_rebind_force(schema) {
     self.find('[data-model]').each(function () {
         var tag = this.tagName.toLowerCase();
         var el = $(this);
-        if (el.is(':radio') || (tag == "select"))
-            return;
-
         var name = el.attr('data-model');
-        var custom = el.attr('data-custom');
         var value = binder_getvalue(model, name);
+		  
+        var custom = el.attr('data-custom');
         if (typeof (custom) !== 'undefined') {
 				if(typeof ($.binder.custom[custom]) == 'function'){
             	value = $.binder.custom[custom].call(el, name, value, custom || '', model, schema);
@@ -339,6 +337,7 @@ function binder_rebind_force(schema) {
         var isRaw = typeof (attr) !== 'undefined' && attr === 'false';
         var val = $.binder.format.call(el, name, value, el.attr('data-format'), model, schema);
 
+		 
         if (typeof (val) === 'undefined')
             val = '';
 
@@ -350,12 +349,23 @@ function binder_rebind_force(schema) {
         }
 
 		  if(el.is(":focus") == false) {
-       		if ((tag === 'input' || tag === 'select' || tag === 'textarea')){
+       		if ((tag === 'input' || tag === 'select' || tag === 'textarea') && !(el.is(':radio'))){
 					if($(el)[0].hasAttribute('multiple'))
 						console.log(val);				
 					else	
 						el.val(val);
 				}
+				else if ((el.is(':radio') ) || (tag == "select")){
+					if (el.val() == val){
+						el.prop('checked',true);
+						if($(this).parent().parent().hasClass('btn-group')){
+							$(this).parent().parent().children('label.btn').removeClass('active');
+							$(this).parent().addClass('active');
+						}
+					}
+					else
+				  		return
+			  }
 		 		else
         			el.html(val);
     		}
@@ -667,10 +677,11 @@ function binder_reflection(obj, fn, path) {
 	}
 }
 
+/* Not sure why there is a delay... testing this out */
 function binder_delay(fn) {
 	setTimeout(function() {
 		fn();
-	}, 120);
+	}, 12);
 }
 
 function binder_build_model(schema){
