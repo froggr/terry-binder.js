@@ -94,9 +94,11 @@ function binder_create(scope, template) {
 	var self = this;
 	model = scope.model;
 	scope.valid = true;
-	scope.autosave = {data:{}};
 	schema = scope.schema;	
-	console.log(schema);
+	scope.autosave = {data:{},active: false};
+	if( $('[data-model-name="'+schema+'"]').is('[data-model-autosave]')){
+		scope.autosave.active = true;
+	}
 	scope.load_time = new Date();
 
 	if (typeof (scope.model) === 'undefined' || scope.model === null)
@@ -192,6 +194,7 @@ function binder_internal_change(e, self, model, schema, scope) {
 	var value_new = $.binder.prepare.call(el, name, value, prepare, model, schema);
 
 
+
 	/* The actual checking of autosave for the model... */
 	if (typeof (value_new) === 'undefined')
 		value_new = $.binder._prepare.call(el, name, value, prepare, model, schema);
@@ -205,7 +208,7 @@ function binder_internal_change(e, self, model, schema, scope) {
 	if (!r){
 		/* This stops binding if validation fails! */
 		//consider dealing with autosave on validation fail here...
-		if($('[data-model-name="'+schema+'"]').is('[data-model-autosave]')){
+		if(scope.autosave.active){
 			scope.autosave.data[name] = 'invalid';
 			binder_autosave(self, scope, name, value_new, model, schema, el);
 		}
@@ -213,7 +216,11 @@ function binder_internal_change(e, self, model, schema, scope) {
 		return;
 	}
 
-	binder_setvalue.call(el, model, name, value_new, schema);
+	binder_setvalue.call(el, model, name, value_new, schema); // LET THE BINDING BEGIN!
+
+	binder_show(self, model, name, schema, scope); // deal with conditional display of any element in bound div	
+	
+
 	self.trigger('model-calc', [self, scope, name, model, schema]);
 
 	if (type == 'radio') {
@@ -227,9 +234,10 @@ function binder_internal_change(e, self, model, schema, scope) {
 		self.trigger('model-update', [model, name, schema]);
 
 		/* Trigger autosave for valid model */
-		if($('[data-model-name="'+schema+'"]').is('[data-model-autosave]'))
+		if(scope.autosave.active){
 			scope.autosave.data[name] = 'valid'; // sets autosave validation scope to valid for model attribute
 			binder_autosave(self, scope, name, value_new, model, schema, el);
+		}
 	});
 }
 
@@ -337,6 +345,7 @@ function binder_rebind_force(schema) {
         var isRaw = typeof (attr) !== 'undefined' && attr === 'false';
         var val = $.binder.format.call(el, name, value, el.attr('data-format'), model, schema);
 
+
 		 
         if (typeof (val) === 'undefined')
             val = '';
@@ -357,6 +366,7 @@ function binder_rebind_force(schema) {
 				}
 				else if ((el.is(':radio') ) || (tag == "select")){
 					if (el.val() == val){
+						console.log(val);
 						el.prop('checked',true);
 						if($(this).parent().parent().hasClass('btn-group')){
 							$(this).parent().parent().children('label.btn').removeClass('active');
@@ -370,6 +380,9 @@ function binder_rebind_force(schema) {
         			el.html(val);
     		}
 	 });
+
+	binder_show(self, model); // deal with conditional display of any element in bound div
+	
 	return self;
 }
 
@@ -571,6 +584,7 @@ function binder_setvalue(obj, path, value, schema) {
 
 	for (var i = 0; i < length - 1; i++) {
 		current = binder_findpipe(current, path[i]);
+
 		if (typeof (current) === 'undefined')
 			return false;
 	}
@@ -583,7 +597,6 @@ function binder_findpipe(current, name, value) {
 	var beg = name.lastIndexOf('[');
 	var pipe;
 	var index = -1;
-
 	if (beg !== -1) {
 		index = parseInt(name.substring(beg + 1).replace(/\]\[/g, ''));
 		if (isNaN(index))
@@ -594,9 +607,11 @@ function binder_findpipe(current, name, value) {
 
 	} else
 		pipe = current[name];
-
-	if (typeof (pipe) === 'undefined')
+	
+	if (typeof (pipe) === 'undefined'){
+		current[name] = value;	
 		return;
+	}
 
 	if (typeof(value) === 'undefined')
 		return pipe;
@@ -608,7 +623,6 @@ function binder_findpipe(current, name, value) {
 		current[name] = value;
 		pipe = current[name];
 	}
-
 	return pipe;
 }
 
@@ -677,6 +691,21 @@ function binder_reflection(obj, fn, path) {
 	}
 }
 
+function	binder_show(self, model, name, schema, scope) { // deal with conditional display of any element in bound div	
+	self.find('[data-show]').each(function () {
+		el = $(this);
+		var condition = el.attr('data-show');
+		 if (typeof (condition) !== 'undefined') {
+			if(eval(condition))
+				el.show();
+			else
+				el.hide();
+		}
+	});
+
+}
+
+
 /* Not sure why there is a delay... testing this out */
 function binder_delay(fn) {
 	setTimeout(function() {
@@ -686,11 +715,22 @@ function binder_delay(fn) {
 
 function binder_build_model(schema){
 	$.binder.scope[schema] = {model:{}};
+	var modelid = $('[data-model-name="'+schema+'"]').attr('data-model-id');
+	if(typeof(modelid) != 'undefined')
+		$.binder.scope[schema].model.id = modelid;
 	$('[data-model-name="'+schema+'"]').find("[data-model]").each(function(){
 		var inputelement = ['INPUT','TEXTAREA','SELECT','DATALIST']
 		var key = $(this).attr("data-model");
-		if(inputelement.indexOf(this.tagName) > -1)
-			var attrib = $(this).val(); 
+		if(inputelement.indexOf(this.tagName) > -1){
+			if (($(this).is(':radio') ) || ($(this).is('select'))){
+				if ($(this).prop('checked')) 
+					var attrib = $(this).val();
+				else
+					var attrib = ""; 
+			}
+			else
+				var attrib = $(this).val(); 
+		}
 		else
 			var attrib = $(this).html();
 		$.binder.scope[schema].model[key] = attrib;        
@@ -698,6 +738,8 @@ function binder_build_model(schema){
 }
 
 function binder_autosave(self, scope, name, value_new, model, schema, el) {
+	if(scope.autosave.active == false)
+		return;
 	/* 
 	 * This checks if the model is initially loading or if it has just saved, and if so blocks the autosave.
 	 * Then once a save happens, a timer is fired for 3 seconds. If the user makes a change, the time is restart.

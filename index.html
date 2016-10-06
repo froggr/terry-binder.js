@@ -108,7 +108,7 @@ ol>li { list-style-type: decimal; padding-bottom: 10px;}
   <div class="container" >
 	  <div class="jumbotron"><img src="./assets/img/terry.gif" class="terrylogo"/><small>a simple jQuery data binder. Originally forked from <em>petersirka/jquery.bindings</em></small>
 	  </div>
-	  <div id="container" data-model-name="obj" data-bind-on-load data-model-autosave>
+	  <div id="container" data-model-name="obj" data-bind-on-load>
 		  <p>Just write some stuff in this super ghetto-oldschool-retro form i got her and see it be bound!</p>
 		  <hr>
 		  <div class="row">
@@ -501,7 +501,6 @@ $.binder.watch = function (isValid, path, value, model, schema) {
 //$.binder.scope.something = {model:{ first_input : 234, second_input : 654 }};
 
  $.binder.scope.obj = {model : {
-				property : 'test',
 				somearray: ["chips", "candy", "pop"],
 				gender: 'male', 
 				select: '2'
